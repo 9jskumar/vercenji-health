@@ -151,8 +151,8 @@ export function CheckoutForm({ enabled }: { enabled: boolean }) {
         <label className="flex items-start gap-3 text-[15px]">
           <input type="checkbox" name="consentTerms" required className="mt-1 size-4 accent-green" />
           <span>
-            I accept the <Link href="/terms" className="text-green underline">terms of sale</Link> and have read the{" "}
-            <Link href="/privacy" className="text-green underline">privacy notice</Link>.
+            I accept the <Link href="/legal/terms" target="_blank" className="text-green underline">terms of sale</Link> and have read the{" "}
+            <Link href="/legal/privacy" target="_blank" className="text-green underline">privacy notice</Link>.
           </span>
         </label>
         {err("consentTerms") && <span className="text-sm font-semibold text-[#9B2C2C]">{err("consentTerms")}</span>}
