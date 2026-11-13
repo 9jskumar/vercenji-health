@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { keepValuesSubmit } from "@/lib/forms";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -244,7 +245,7 @@ export function PartnerApplicationForm() {
           <strong className="text-forest">Partnership disclaimer.</strong> {partnershipDisclaimer}
         </div>
         <Check name="consentPrivacy" required error={err("consentPrivacy")}>
-          I have read the <a href="/legal/privacy" className="text-green underline">privacy notice</a> and agree to be contacted about my application. *
+          I have read the <Link href="/legal/privacy" target="_blank" className="text-green underline">privacy notice</Link> and agree to be contacted about my application. *
         </Check>
         <Check name="consentDisclaimer" required error={err("consentDisclaimer")}>
           I have read and understood the partnership disclaimer. *
