@@ -1,5 +1,6 @@
 "use client";
 
+import { keepValuesSubmit } from "@/lib/forms";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { submitPartnerApplication, type PartnerFormState } from "@/lib/actions/partner";
@@ -13,11 +14,11 @@ import {
   type PartnerModelId,
 } from "@/content/partner";
 
-const steps = ["About you", "Your proposal", "Consent"] as const;
+const steps = ["About you", "Your proposal", "Documents and consent"] as const;
 const stepOfField: Record<string, number> = {
   fullName: 0, companyName: 0, email: 0, phone: 0, country: 0, city: 0,
   model: 1, proposedLocation: 1, investmentRange: 1, launchTimeline: 1, hasKitchen: 1, kitchenStructure: 1, experience: 1, proposal: 1,
-  consentPrivacy: 2, consentDisclaimer: 2,
+  consentPrivacy: 2, consentDisclaimer: 2, documents: 2,
 };
 
 function isModel(v: string | null): v is PartnerModelId {
@@ -92,7 +93,7 @@ export function PartnerApplicationForm() {
   }
 
   return (
-    <form ref={formRef} action={action} className="flex flex-col gap-6" noValidate={false}>
+    <form ref={formRef} onSubmit={keepValuesSubmit(action)} className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 ref={headingRef} tabIndex={-1} className="m-0 font-serif text-[32px] font-normal text-forest outline-none">
           Partnership application
@@ -213,7 +214,32 @@ export function PartnerApplicationForm() {
       </fieldset>
 
       <fieldset data-step="2" hidden={step !== 2} className="m-0 flex flex-col gap-4 border-0 p-0">
-        <legend className="sr-only">Consent</legend>
+        <legend className="sr-only">Documents and consent</legend>
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="documents" className="label">Supporting documents (optional)</label>
+          <span id="documents-help" className="text-sm text-stone">
+            Company profile, premises photos or licences. PDF, JPG or PNG, up to 3 files of 10 MB each.
+          </span>
+          <input
+            id="documents"
+            name="documents"
+            type="file"
+            multiple
+            accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+            aria-describedby="documents-help"
+            onChange={(e) => {
+              const files = Array.from(e.currentTarget.files ?? []);
+              const msg =
+                files.length > 3 ? "Please choose at most 3 files."
+                : files.some((f) => f.size > 10 * 1024 * 1024) ? "Each file must be 10 MB or smaller."
+                : "";
+              e.currentTarget.setCustomValidity(msg);
+              if (msg) e.currentTarget.reportValidity();
+            }}
+            className="field file:mr-3 file:rounded-full file:border-0 file:bg-green file:px-4 file:py-2 file:font-semibold file:text-white"
+          />
+          {err("documents") && <span className="text-sm font-semibold text-[#9B2C2C]">{err("documents")}</span>}
+        </div>
         <div className="rounded-2xl border border-line bg-ivory p-5 text-sm leading-relaxed text-[#45453F]">
           <strong className="text-forest">Partnership disclaimer.</strong> {partnershipDisclaimer}
         </div>
