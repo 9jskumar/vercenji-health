@@ -21,7 +21,10 @@ export function uploadRoot() {
 }
 
 /** Validates uploads; returns an error message for the applicant, or the checked files. */
-export async function checkUploads(files: File[]): Promise<{ error: string } | { files: CheckedFile[] }> {
+export async function checkUploads(
+  files: File[],
+  allowed: readonly string[] = ["application/pdf", "image/png", "image/jpeg"],
+): Promise<{ error: string } | { files: CheckedFile[] }> {
   const real = files.filter((f) => f.size > 0);
   if (real.length > MAX_FILES) return { error: `Please attach at most ${MAX_FILES} documents.` };
   let total = 0;
@@ -32,7 +35,10 @@ export async function checkUploads(files: File[]): Promise<{ error: string } | {
     if (total > MAX_TOTAL_BYTES) return { error: "Your documents add up to more than 20 MB. Please attach smaller files." };
     const buffer = Buffer.from(await f.arrayBuffer());
     const sig = SIGNATURES.find((s) => s.test(buffer));
-    if (!sig) return { error: `"${f.name}" is not a PDF, JPG or PNG file.` };
+    if (!sig || !allowed.includes(sig.mime)) {
+      const kinds = allowed.map((m) => m.split("/")[1].replace("jpeg", "JPG").toUpperCase()).join(", ");
+      return { error: `"${f.name}" is not an accepted file type (${kinds}).` };
+    }
     out.push({
       buffer,
       mime: sig.mime,

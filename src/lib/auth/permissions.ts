@@ -3,6 +3,7 @@ export const PERMISSIONS = {
   applicationsRead: "applications.read",
   applicationsUpdate: "applications.update",
   applicationsDocuments: "applications.documents",
+  catalogueManage: "catalogue.manage",
   staffManage: "staff.manage",
 } as const;
 
@@ -15,6 +16,7 @@ export const DEFAULT_ROLES: { key: string; name: string; permissions: string[] }
     name: "Partnerships team",
     permissions: [PERMISSIONS.applicationsRead, PERMISSIONS.applicationsUpdate, PERMISSIONS.applicationsDocuments],
   },
+  { key: "catalogue", name: "Catalogue team", permissions: [PERMISSIONS.catalogueManage] },
 ];
 
 export function hasPermission(granted: string[], needed: Permission) {
