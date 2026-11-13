@@ -14,6 +14,10 @@ export const company = {
   copyrightYear: 2026,
   // The company profile and the purchase order show different addresses; owner to confirm.
   registeredAddress: null as string | null,
+  supportEmail: "support@vercenji.com",
+  supportPhone: "+91 97254 34579",
+  grievanceOfficer: { name: "JS Kumar", email: "info@vercenji.com" },
+  disputeCity: "Ahmedabad",
 };
 
 export const productDisclaimer =
