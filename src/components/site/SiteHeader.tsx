@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { mainNav } from "@/lib/site";
+import { Suspense } from "react";
+import { CartCount } from "./CartCount";
+import { MainNav, NavList } from "./MainNav";
 
-type Props = { active?: (typeof mainNav)[number]["id"]; cartCount?: number };
-
-export function SiteHeader({ active, cartCount = 0 }: Props) {
+export function SiteHeader() {
   return (
     <header className="w-full border-b border-line bg-white text-charcoal">
       <div className="bg-forest text-xs tracking-[0.02em] text-ivory">
@@ -32,20 +32,9 @@ export function SiteHeader({ active, cartCount = 0 }: Props) {
             className="h-[52px] w-auto"
           />
         </Link>
-        <nav aria-label="Main" className="flex flex-[1_1_520px] flex-wrap items-center gap-x-[26px] gap-y-1">
-          {mainNav.map((item) => (
-            <Link
-              key={item.id}
-              href={item.href}
-              aria-current={item.id === active ? "page" : undefined}
-              className={`border-b-2 py-2.5 text-[15px] font-semibold no-underline ${
-                item.id === active ? "border-gold text-green" : "border-transparent text-charcoal hover:text-green"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <Suspense fallback={<NavList pathname={null} />}>
+          <MainNav />
+        </Suspense>
         <div className="ml-auto flex items-center gap-1.5">
           <Link href="/search" aria-label="Search" className="flex size-11 items-center justify-center rounded-full text-green">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
@@ -61,14 +50,16 @@ export function SiteHeader({ active, cartCount = 0 }: Props) {
           </Link>
           <Link
             href="/cart"
-            aria-label={`Cart, ${cartCount} items`}
+            aria-label="Cart"
             className="flex h-11 items-center gap-2 rounded-full bg-green pr-3.5 pl-3 text-sm font-semibold text-white no-underline"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8z" />
               <path d="M9 8V6a3 3 0 0 1 6 0v2" />
             </svg>
-            <span>{cartCount}</span>
+            <Suspense fallback={<span>0</span>}>
+              <CartCount />
+            </Suspense>
           </Link>
         </div>
       </div>
