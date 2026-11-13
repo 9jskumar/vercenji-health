@@ -9,7 +9,7 @@ export function SiteHeader({ active, cartCount = 0 }: Props) {
     <header className="w-full border-b border-line bg-white text-charcoal">
       <div className="bg-forest text-xs tracking-[0.02em] text-ivory">
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-2">
-          <span>Free delivery details and offers will appear here</span>
+          <span>Integrated health &amp; wellness · Nourish. Move. Hydrate. Live.</span>
           <span className="flex flex-wrap gap-[18px]">
             <span>India · ₹ INR</span>
             <Link href="/account/orders" className="text-ivory no-underline">

@@ -27,3 +27,31 @@ body {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
+
+@utility eyebrow {
+  @apply text-[13px] font-bold tracking-[0.18em] text-gold-deep uppercase;
+}
+@utility h2 {
+  @apply m-0 font-serif text-[clamp(32px,4vw,48px)] leading-[1.1] font-normal text-forest;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center rounded-full px-7 py-4 text-base font-semibold no-underline transition-colors duration-200 motion-reduce:transition-none;
+}
+@utility btn-primary {
+  @apply btn bg-green text-white hover:bg-forest;
+}
+@utility btn-ghost {
+  @apply btn border-[1.5px] border-green text-green hover:bg-green hover:text-white;
+}
+@utility btn-light {
+  @apply btn bg-ivory text-forest hover:bg-white;
+}
+@utility card-lift {
+  @apply transition duration-[250ms] hover:-translate-y-[3px] hover:shadow-[0_16px_32px_rgba(22,50,29,0.10)] motion-reduce:transition-none motion-reduce:hover:translate-y-0;
+}
+@utility field {
+  @apply w-full rounded-xl border border-line bg-white px-4 py-3 text-base text-charcoal;
+}
+@utility label {
+  @apply text-sm font-semibold text-charcoal;
+}
