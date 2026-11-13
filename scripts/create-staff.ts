@@ -4,6 +4,9 @@
  *
  *   npm run staff:create -- --email owner@vercenji.com --name "Owner name" --role owner
  *
+ * On the live server (where there is no .env file) it also asks for DATABASE_URL and
+ * APP_ENCRYPTION_KEY, which must match the values in the Node.js app settings. Input is hidden.
+ *
  * You are asked for the password twice (it is not shown). The script prints a setup key
  * and an otpauth:// link to add to Google Authenticator, Microsoft Authenticator or 1Password.
  */
@@ -34,6 +37,10 @@ function askHidden(question: string): Promise<string> {
 }
 
 async function main() {
+  // The live app keeps these in cPanel's Node.js app settings, which a terminal does not see.
+  for (const key of ["DATABASE_URL", "APP_ENCRYPTION_KEY"]) {
+    if (!process.env[key]) process.env[key] = (await askHidden(`${key} (same value as in the app settings): `)).trim();
+  }
   const email = arg("email")?.toLowerCase();
   const name = arg("name");
   const roleKey = arg("role") ?? "owner";

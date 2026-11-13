@@ -1,6 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { cache } from "react";
 import { db } from "@/lib/db";
 import { randomToken, sha256 } from "./crypto";
@@ -37,6 +38,8 @@ export type StaffUser = { id: string; name: string | null; email: string | null;
 export const getStaff = cache(async (): Promise<StaffUser | null> => {
   const token = (await cookies()).get(COOKIE)?.value;
   if (!token) return null;
+  // Staff data is read per request, never during a prefetch: the session check depends on the current time.
+  await connection();
   const session = await db.session.findUnique({
     where: { id: sha256(token) },
     include: { user: { include: { roles: { include: { role: true } } } } },
