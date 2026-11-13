@@ -36,6 +36,7 @@ export default function PanelLayout({ children }: LayoutProps<"/admin">) {
           <nav aria-label="Admin" className="flex flex-1 flex-wrap gap-5 text-sm font-semibold">
             <Link href="/admin" className="text-ivory">Overview</Link>
             <Link href="/admin/applications" className="text-ivory">Partner applications</Link>
+            <Link href="/admin/orders" className="text-ivory">Orders</Link>
             <Link href="/admin/products" className="text-ivory">Products</Link>
           </nav>
           <Suspense fallback={null}>

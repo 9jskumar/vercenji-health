@@ -38,7 +38,7 @@ export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
           </div>
         </section>
       )}
-      <p className="m-0 text-sm text-stone">Products, orders, customers and content screens arrive with the shop in the next pull requests.</p>
+      <p className="m-0 text-sm text-stone">Customers and content screens arrive in later pull requests.</p>
     </div>
   );
 }
