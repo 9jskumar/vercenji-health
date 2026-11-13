@@ -17,10 +17,15 @@ Create or reset an account on the server (never share the output):
 
     npm run staff:create -- --email you@example.com --name "Your name" --role owner
 
-Roles: `owner` (everything) and `partnerships` (partner applications only).
+Roles: `owner` (everything), `partnerships` (partner applications only) and `catalogue` (products and categories).
 Uploaded documents are stored in `UPLOAD_DIR`, outside the public folder, and served to signed-in staff only.
 
 ## Rules
 - No secrets in Git. Production configuration lives on the server.
 - No product claim, certification, price or review is published unless the owner has supplied and approved it.
 - Design tokens live in `src/app/globals.css` and follow the approved Phase 2 prototype.
+
+## Adding products
+Admin → Products → New product. Save it, then add options (size, SKU, MRP, price, stock) and images.
+A product appears in the shop only when it is **Active** and has at least one option on sale.
+Nutrition products cannot be made Active until "Label and claims approved by" is filled in.
