@@ -40,6 +40,6 @@ Checkout uses Razorpay's hosted payment window, so card, UPI and bank details ne
 
 An order is marked paid only by a verified signature from Razorpay: either the signed browser response (checked and then read back from Razorpay's API) or the signed webhook. Each webhook event is processed once. Stock is taken when payment is captured; if it ran out in the meantime, a note appears on the order.
 
-Delivery charges are set with `SHIPPING_FLAT_RUPEES` and `SHIPPING_FREE_ABOVE_RUPEES`. Both default to no charge until the owner confirms the rates.
+Delivery charges are set with `SHIPPING_FLAT_RUPEES` and `SHIPPING_FREE_ABOVE_RUPEES`. The owner has confirmed free delivery from ₹3,000; the charge for smaller orders is still to be confirmed, and until `SHIPPING_FLAT_RUPEES` is set no charge is added.
 
 Orders are managed at `/admin/orders` (owner, or staff with the `orders` role). Staff move orders through processing, shipped (courier and tracking number required) and delivered. Cancelling a paid order returns its stock and reminds staff to issue the refund in the Razorpay dashboard; refunds from the admin come later.

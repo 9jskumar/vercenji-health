@@ -26,13 +26,12 @@ export const legalPages: LegalPage[] = [
     version: PRIVACY_NOTICE_VERSION,
     approved: false,
     toConfirm: [
-      "Registered address to print in this notice",
       "Retention period for order and invoice records (tax law usually needs several years)",
       "Whether customer data will also be handled from the UAE once the UAE store opens",
       "Country of the hosting data centre, to state where data is stored",
     ],
     sections: [
-      { heading: "Who we are", body: [`This notice explains how ${who} handles personal information collected through this website.`] },
+      { heading: "Who we are", body: [`This notice explains how ${who}, registered at ${company.registeredAddress}, handles personal information collected through this website.`] },
       {
         heading: "What we collect",
         body: [
@@ -113,7 +112,7 @@ export const legalPages: LegalPage[] = [
       "Review by a legal adviser",
     ],
     sections: [
-      { heading: "About these terms", body: [`This website is operated by ${who}. By using it or placing an order, you agree to these terms.`] },
+      { heading: "About these terms", body: [`This website is operated by ${who}, registered at ${company.registeredAddress}. By using it or placing an order, you agree to these terms.`] },
       {
         heading: "Prices and payment",
         body: [
@@ -158,16 +157,15 @@ export const legalPages: LegalPage[] = [
     version: "draft-2026-11",
     approved: false,
     toConfirm: [
-      "Delivery charge amount and any free delivery threshold",
-      "A realistic delivery time range to show customers (for example 2 to 5 working days)",
+      "Delivery charge in rupees for orders under ₹3,000",
       "Whether lifestyle products can be returned, and on what terms",
     ],
     sections: [
       { heading: "Where we deliver", body: ["We currently deliver to addresses in India. Deliveries to the UAE will follow when our UAE store opens."] },
-      { heading: "Delivery charges", body: ["Any delivery charge is calculated from your order and shown at checkout before you pay."] },
+      { heading: "Delivery charges", body: ["Delivery is free on orders of ₹3,000 or more. For smaller orders, a delivery charge is added and shown at checkout before you pay."] },
       {
         heading: "Dispatch and tracking",
-        body: ["Vercenji dispatches orders as soon as possible after payment is confirmed. Once your order ships, we share the courier name and tracking number."],
+        body: ["Vercenji dispatches orders as soon as possible after payment is confirmed. Orders are usually delivered within 3 to 5 working days. Once your order ships, we share the courier name and tracking number."],
       },
       {
         heading: "Damaged, wrong or missing items",

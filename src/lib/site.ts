@@ -12,8 +12,8 @@ export const company = {
   brand: "Vercenji",
   gstin: "24ABBFV7993H1ZO",
   copyrightYear: 2026,
-  // The company profile and the purchase order show different addresses; owner to confirm.
-  registeredAddress: null as string | null,
+  // Confirmed by the owner on 2026-11-13.
+  registeredAddress: "Sun Pharma Road, Tandalja, Vadodara 390012, Gujarat, India",
   supportEmail: "support@vercenji.com",
   supportPhone: "+91 97254 34579",
   grievanceOfficer: { name: "JS Kumar", email: "info@vercenji.com" },
