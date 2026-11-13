@@ -27,7 +27,6 @@ export const legalPages: LegalPage[] = [
     approved: false,
     toConfirm: [
       "Registered address to print in this notice",
-      "Name and email of the grievance officer (Digital Personal Data Protection Act, 2023)",
       "Retention period for order and invoice records (tax law usually needs several years)",
       "Whether customer data will also be handled from the UAE once the UAE store opens",
       "Country of the hosting data centre, to state where data is stored",
@@ -95,7 +94,9 @@ export const legalPages: LegalPage[] = [
       {
         heading: "Your rights",
         body: [
-          "You can ask to see the personal information we hold about you, to correct it, or to delete it where we are not required to keep it. You can withdraw consent to marketing at any time. To make a request or raise a complaint, contact our grievance officer. If you are not satisfied with our response, you may complain to the Data Protection Board of India.",
+          "You can ask to see the personal information we hold about you, to correct it, or to delete it where we are not required to keep it. You can withdraw consent to marketing at any time. To make a request or raise a complaint, contact our grievance officer.",
+          `Grievance officer: ${company.grievanceOfficer.name}, ${company.grievanceOfficer.email}`,
+          "If you are not satisfied with our response, you may complain to the Data Protection Board of India.",
         ],
       },
       { heading: "Changes", body: ["We will post any changes to this notice on this page and update the version shown above."] },
@@ -108,9 +109,8 @@ export const legalPages: LegalPage[] = [
     version: "draft-2026-11",
     approved: false,
     toConfirm: [
-      "Customer support email and phone number",
-      "City whose courts have jurisdiction (for example Vadodara)",
       "Whether orders may be cancelled after dispatch",
+      "Review by a legal adviser",
     ],
     sections: [
       { heading: "About these terms", body: [`This website is operated by ${who}. By using it or placing an order, you agree to these terms.`] },
@@ -147,7 +147,8 @@ export const legalPages: LegalPage[] = [
           "Nothing in these terms limits rights you have under the Consumer Protection Act, 2019, or other law that cannot be excluded. Otherwise, our liability for any order is limited to the amount you paid for it.",
         ],
       },
-      { heading: "Law", body: ["These terms are governed by the laws of India."] },
+      { heading: "Law and disputes", body: [`These terms are governed by the laws of India. Disputes are subject to the courts at ${company.disputeCity}, Gujarat.`] },
+      { heading: "Contact us", body: [`Email ${company.supportEmail} or call ${company.supportPhone}.`] },
     ],
   },
   {
@@ -157,28 +158,27 @@ export const legalPages: LegalPage[] = [
     version: "draft-2026-11",
     approved: false,
     toConfirm: [
-      "Delivery charge and free delivery threshold",
-      "Dispatch time and typical delivery times",
-      "Return window in days, and which products can be returned (for example sealed supplements only)",
-      "How customers start a return (email, phone or online form)",
+      "Delivery charge amount and any free delivery threshold",
+      "A realistic delivery time range to show customers (for example 2 to 5 working days)",
+      "Whether lifestyle products can be returned, and on what terms",
     ],
     sections: [
       { heading: "Where we deliver", body: ["We currently deliver to addresses in India. Deliveries to the UAE will follow when our UAE store opens."] },
       { heading: "Delivery charges", body: ["Any delivery charge is calculated from your order and shown at checkout before you pay."] },
       {
         heading: "Dispatch and tracking",
-        body: ["We dispatch paid orders through courier partners. Once your order ships, we share the courier name and tracking number."],
+        body: ["Vercenji dispatches orders as soon as possible after payment is confirmed. Once your order ships, we share the courier name and tracking number."],
       },
       {
         heading: "Damaged, wrong or missing items",
         body: [
-          "If an item arrives damaged or is not what you ordered, contact us with your order number and photos as soon as possible. We will replace it or refund you.",
+          `If an item arrives damaged or is not what you ordered, contact us within 24 hours of delivery at ${company.supportEmail} or ${company.supportPhone}, with your order number and photos. We will replace it or refund you.`,
         ],
       },
       {
         heading: "Returns",
         body: [
-          "For safety and hygiene, nutrition products can only be returned if they are unopened with the seal intact. Lifestyle products must be unused and in their original packaging.",
+          "Returns are accepted only for wrong or damaged deliveries reported within 24 hours. For safety and hygiene, supplements can only be returned unopened with the seal intact.",
         ],
       },
       {
