@@ -13,6 +13,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  // MilesWeb runs the app with Node.js ("Setup Node.js App"): a self-contained server.js build.
+  output: "standalone",
   poweredByHeader: false,
   experimental: {
     serverActions: {
