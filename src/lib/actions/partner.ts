@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { Prisma, type PartnerModel } from "@/generated/prisma/client";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
+import { checkUploads, removeFolder, storeFiles, type CheckedFile } from "@/lib/uploads";
 import {
   countries,
   investmentRanges,
@@ -86,7 +87,7 @@ export async function submitPartnerApplication(_prev: PartnerFormState, form: Fo
   }
 
   const raw = Object.fromEntries(
-    [...form.entries()].filter(([k, v]) => !k.startsWith("$ACTION") && typeof v === "string" && v !== ""),
+    [...form.entries()].filter(([k, v]) => !k.startsWith("$ACTION") && k !== "documents" && typeof v === "string" && v !== ""),
   );
   const parsed = schema.safeParse(raw);
   if (!parsed.success) {
@@ -100,6 +101,9 @@ export async function submitPartnerApplication(_prev: PartnerFormState, form: Fo
   const d = parsed.data;
   if (d.website) return { ok: true, reference: newReference(new Date().getFullYear()) }; // bot: pretend success
 
+  const uploads = await checkUploads(form.getAll("documents").filter((v): v is File => v instanceof File));
+  if ("error" in uploads) return { error: uploads.error, fieldErrors: { documents: uploads.error } };
+
   const now = new Date();
   const retainUntil = new Date(now);
   retainUntil.setMonth(retainUntil.getMonth() + RETENTION_MONTHS);
@@ -107,7 +111,7 @@ export async function submitPartnerApplication(_prev: PartnerFormState, form: Fo
   for (let attempt = 0; attempt < 3; attempt++) {
     const reference = newReference(now.getFullYear());
     try {
-      await db.partnerApplication.create({
+      const app = await db.partnerApplication.create({
         data: {
           reference,
           model: d.model as PartnerModel,
@@ -129,6 +133,7 @@ export async function submitPartnerApplication(_prev: PartnerFormState, form: Fo
           retainUntil,
         },
       });
+      await attachDocuments(app.id, uploads.files);
       if (d.marketing) {
         await db.newsletterSubscriber.upsert({
           where: { email: d.email.toLowerCase() },
@@ -145,4 +150,26 @@ export async function submitPartnerApplication(_prev: PartnerFormState, form: Fo
     }
   }
   return { error: "Something went wrong on our side. Please try again in a few minutes." };
+}
+
+async function attachDocuments(applicationId: string, files: CheckedFile[]) {
+  if (files.length === 0) return;
+  const folder = `applications/${applicationId}`;
+  try {
+    const paths = await storeFiles(folder, files);
+    await db.applicationDocument.createMany({
+      data: files.map((f, i) => ({
+        applicationId,
+        path: paths[i],
+        originalName: f.originalName,
+        mimeType: f.mime,
+        sizeBytes: f.buffer.length,
+        sha256: f.sha256,
+      })),
+    });
+  } catch (e) {
+    // Keep the application; staff can request the documents again. Never leave orphaned files.
+    await removeFolder(folder);
+    console.error("document storage failed", e);
+  }
 }

@@ -11,6 +11,15 @@ Brand site, nutrition and lifestyle shop, EMS equipment catalogue and enquiries,
 3. `npm install`, then `npx prisma migrate dev`.
 4. `npm run dev` and open http://localhost:3000.
 
+## Staff accounts
+Admin is at `/admin`. Staff sign in with email, password and a 6-digit code from an authenticator app.
+Create or reset an account on the server (never share the output):
+
+    npm run staff:create -- --email you@example.com --name "Your name" --role owner
+
+Roles: `owner` (everything) and `partnerships` (partner applications only).
+Uploaded documents are stored in `UPLOAD_DIR`, outside the public folder, and served to signed-in staff only.
+
 ## Rules
 - No secrets in Git. Production configuration lives on the server.
 - No product claim, certification, price or review is published unless the owner has supplied and approved it.
