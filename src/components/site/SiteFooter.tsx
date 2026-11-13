@@ -19,8 +19,8 @@ const columns = [
       ["Wellness Hub", "/partner#wellness-hub"],
       ["Home Diet & Nutrition", "/partner#home-diet"],
       ["Wellness Corner", "/partner#wellness-corner"],
-      ["Cloud Kitchen Partner", "/food#cloud-kitchen"],
-      ["Apply now", "/partner/apply"],
+      ["Cloud Kitchen Partner", "/partner#cloud-kitchen"],
+      ["Apply now", "/partner#apply"],
     ],
   },
   {
