@@ -5,6 +5,7 @@ import { VerticalIcon, TrustIcon, Tick } from "@/components/site/icons";
 import { FeaturedProducts } from "@/components/catalogue/FeaturedProducts";
 import { NewsletterForm } from "@/components/site/NewsletterForm";
 import { trustClaims, confirmedTrust } from "@/content/trust";
+import { isLive } from "@/lib/site";
 
 const verticals = [
   { key: "nutrition", n: "01", title: "Nutrition & Supplements", body: "Ayurvedic-inspired and everyday nutrition, with transparent ingredients and sourcing.", cta: "Shop Supplements", href: "/nutrition" },
@@ -30,7 +31,7 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/nutrition" className="btn-primary">Explore Products</Link>
-            <Link href="/ems" className="btn-ghost">Discover EMS Wellness</Link>
+            {isLive("ems") && <Link href="/ems" className="btn-ghost">Discover EMS Wellness</Link>}
           </div>
           <ul className="m-0 flex list-none flex-wrap gap-x-6 gap-y-2.5 p-0 pt-2 text-sm text-[#45453F]">
             {confirmedTrust.map((k) => (
@@ -57,7 +58,9 @@ export default function Home() {
             Vercenji is a quality-first wellness house. We bring nutrition, movement, hydration and healthy food together, so
             better everyday choices are easier to make and easier to trust.
           </p>
-          <Link href="/about" className="text-[15px] font-bold text-green underline underline-offset-4">Read our story</Link>
+          {isLive("about") && (
+            <Link href="/about" className="text-[15px] font-bold text-green underline underline-offset-4">Read our story</Link>
+          )}
         </div>
       </section>
 
@@ -70,8 +73,9 @@ export default function Home() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {verticals.map((v) => {
             const Icon = VerticalIcon[v.key];
-            return (
-              <Link key={v.key} href={v.href} className="card-lift flex flex-col gap-6 rounded-3xl border border-line bg-white p-6 no-underline">
+            const live = isLive(v.key);
+            const body = (
+              <>
                 <div className="flex items-start justify-between text-green">
                   <Icon />
                   <span className="font-serif text-sm text-gold-deep">{v.n}</span>
@@ -79,9 +83,18 @@ export default function Home() {
                 <div className="flex flex-1 flex-col gap-2.5">
                   <h3 className="m-0 font-serif text-[22px] leading-tight font-normal text-forest">{v.title}</h3>
                   <p className="m-0 flex-1 text-[15px] leading-relaxed text-stone">{v.body}</p>
-                  <span className="text-sm font-bold text-green">{v.cta} →</span>
+                  <span className={`text-sm font-bold ${live ? "text-green" : "text-stone"}`}>{live ? `${v.cta} →` : "Coming soon"}</span>
                 </div>
+              </>
+            );
+            return live ? (
+              <Link key={v.key} href={v.href} className="card-lift flex flex-col gap-6 rounded-3xl border border-line bg-white p-6 no-underline">
+                {body}
               </Link>
+            ) : (
+              <div key={v.key} className="flex flex-col gap-6 rounded-3xl border border-line bg-white p-6">
+                {body}
+              </div>
             );
           })}
         </div>
@@ -93,6 +106,7 @@ export default function Home() {
       </Suspense>
 
       {/* EMS spotlight */}
+      {isLive("ems") && (
       <section className="mt-12 bg-forest text-ivory">
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-12 px-6 py-[88px]">
           <div className="flex min-h-[320px] flex-[1_1_420px] items-center justify-center rounded-[28px] border border-forest-line text-gold-light">
@@ -122,9 +136,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Food and water, Release B: interest only until the pilots open. */}
+      {(isLive("food") || isLive("water")) && (
       <section className="mx-auto grid max-w-[1240px] grid-cols-1 gap-5 px-6 pt-[88px] md:grid-cols-2">
+        {isLive("food") && (
         <div className="flex flex-col gap-4 rounded-3xl border border-line bg-white p-8">
           <div className="eyebrow">Healthy food</div>
           <h2 className="m-0 font-serif text-[32px] leading-tight font-normal text-forest">Balanced meals, every ingredient listed</h2>
@@ -133,6 +150,8 @@ export default function Home() {
           </p>
           <Link href="/food" className="btn-ghost self-start">Explore Healthy Meals</Link>
         </div>
+        )}
+        {isLive("water") && (
         <div className="flex flex-col gap-4 rounded-3xl border border-line bg-white p-8">
           <div className="eyebrow">Pure drinking water</div>
           <h2 className="m-0 font-serif text-[32px] leading-tight font-normal text-forest">Delivered on your schedule</h2>
@@ -141,7 +160,9 @@ export default function Home() {
           </p>
           <Link href="/water" className="btn-ghost self-start">Order Drinking Water</Link>
         </div>
+        )}
       </section>
+      )}
 
       {/* Partner */}
       <section className="mx-auto flex max-w-[1240px] flex-col gap-7 px-6 pt-[88px] pb-14">

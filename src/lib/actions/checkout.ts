@@ -10,6 +10,7 @@ import { createRazorpayOrder, fetchPayment, paymentsEnabled, publicKeyId, verify
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 import { indianStates } from "@/content/checkout";
+import { getCustomer } from "@/lib/auth/customer";
 
 export type CheckoutState = {
   error?: string;
@@ -82,6 +83,9 @@ export async function placeOrder(_prev: CheckoutState, form: FormData): Promise<
     city: d.city, state: d.state, postalCode: d.postalCode, country: "IN",
   };
 
+  // Signed-in customers get the order on their account; guests see it after signing in with the same email.
+  const customer = await getCustomer();
+
   let order: { id: string; number: string } | null = null;
   const year = new Date().getFullYear();
   for (let attempt = 0; attempt < 3 && !order; attempt++) {
@@ -89,6 +93,7 @@ export async function placeOrder(_prev: CheckoutState, form: FormData): Promise<
       order = await db.order.create({
         data: {
           number: newOrderNumber(year),
+          userId: customer?.id,
           guestEmail: d.email.toLowerCase(),
           guestPhone: phone,
           currency,
