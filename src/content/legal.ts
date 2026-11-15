@@ -29,6 +29,7 @@ export const legalPages: LegalPage[] = [
       "Retention period for order and invoice records (tax law usually needs several years)",
       "Whether customer data will also be handled from the UAE once the UAE store opens",
       "Country of the hosting data centre, to state where data is stored",
+      "How long customer accounts are kept, and whether inactive accounts are closed automatically",
     ],
     sections: [
       { heading: "Who we are", body: [`This notice explains how ${who}, registered at ${company.registeredAddress}, handles personal information collected through this website.`] },
@@ -37,6 +38,8 @@ export const legalPages: LegalPage[] = [
         body: [
           [
             "When you order: your name, email, mobile number, delivery address, optional GSTIN and delivery notes, and the items you buy.",
+            "When you create an account or sign in: your email address, the name you choose to add, and a record of when you signed in. Sign-in codes are stored only in scrambled form and expire after 10 minutes.",
+            "When you report a problem with a delivery: the reason and details you give.",
             "When you pay: Razorpay processes your payment on its own secure page. We receive the payment status, amount and method (for example UPI or card), but never your card number, UPI PIN or bank login.",
             "When you apply to become a partner: the details you enter in the application and any documents you upload.",
             "When you join our mailing list: your email address and the time you agreed.",
@@ -49,6 +52,7 @@ export const legalPages: LegalPage[] = [
         body: [
           [
             "To process, deliver and support your orders, and to issue GST invoices.",
+            "To let you sign in to your account, see your orders and request returns.",
             "To review partnership applications and contact you about yours.",
             "To send marketing emails, only if you ticked the box to receive them.",
             "To keep the website secure and prevent fraud.",
@@ -59,7 +63,7 @@ export const legalPages: LegalPage[] = [
       {
         heading: "Cookies",
         body: [
-          "We use only cookies that the website needs to work: one remembers your cart, one lets you see the confirmation of your latest order, and one keeps staff signed in to the admin area. We do not currently use advertising or analytics cookies. If that changes, we will ask for your consent first.",
+          "We use only cookies that the website needs to work: one remembers your cart, one lets you see the confirmation of your latest order, one keeps you signed in to your account (for up to 30 days, or until you sign out), one holds a pending sign-in code for 10 minutes, and one keeps staff signed in to the admin area. We do not currently use advertising or analytics cookies. If that changes, we will ask for your consent first.",
         ],
       },
       {
@@ -81,6 +85,7 @@ export const legalPages: LegalPage[] = [
             "Partnership applications that do not go ahead are deleted 24 months after they are received, together with uploaded documents.",
             "Order and invoice records are kept for as long as tax and accounting law requires.",
             "Mailing list details are kept until you unsubscribe.",
+            "Customer accounts are kept until you ask us to close them. Orders in a closed account are still kept as order and invoice records.",
           ],
         ],
       },
