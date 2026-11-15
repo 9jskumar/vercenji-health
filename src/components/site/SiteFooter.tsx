@@ -1,16 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import { company, productDisclaimer } from "@/lib/site";
+import { company, isLive, productDisclaimer, type Section } from "@/lib/site";
 
-const columns = [
+// The third value, when present, is the section the link belongs to; hidden sections are left out.
+const columns: { title: string; links: [label: string, href: string, section?: Section][] }[] = [
   {
     title: "Shop",
     links: [
       ["Nutrition & Supplements", "/nutrition"],
-      ["EMS Wellness & Equipment", "/ems"],
-      ["Pure Drinking Water", "/water"],
-      ["Healthy Food", "/food"],
-      ["Lifestyle & Wearables", "/lifestyle"],
+      ["EMS Wellness & Equipment", "/ems", "ems"],
+      ["Pure Drinking Water", "/water", "water"],
+      ["Healthy Food", "/food", "food"],
+      ["Lifestyle & Wearables", "/lifestyle", "lifestyle"],
     ],
   },
   {
@@ -26,8 +27,9 @@ const columns = [
   {
     title: "Help",
     links: [
-      ["About Vercenji", "/about"],
+      ["About Vercenji", "/about", "about"],
       ["FAQ and contact", "/help"],
+      ["My account", "/account"],
       ["Track your order", "/account/orders"],
       ["Returns request", "/account/returns"],
     ],
@@ -42,7 +44,7 @@ const columns = [
       ["Partnership disclaimer", "/legal/partnership-disclaimer"],
     ],
   },
-] as const;
+];
 
 export function SiteFooter() {
   const year = company.copyrightYear;
@@ -60,7 +62,7 @@ export function SiteFooter() {
           {columns.map((col) => (
             <div key={col.title} className="flex flex-[1_1_150px] flex-col gap-3">
               <div className="text-xs font-bold tracking-[0.14em] text-gold-light uppercase">{col.title}</div>
-              {col.links.map(([label, href]) => (
+              {col.links.filter(([, , section]) => !section || isLive(section)).map(([label, href]) => (
                 <Link key={href} href={href} className="text-ivory no-underline hover:underline">
                   {label}
                 </Link>

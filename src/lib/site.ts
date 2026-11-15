@@ -1,4 +1,22 @@
-export const mainNav = [
+/**
+ * Sections that customers can see. The owner asked (2026-11-15) to hide the ones that are not ready yet:
+ * set a section to true to show its links again across the header, footer and home page.
+ */
+export const liveSections = {
+  nutrition: true,
+  partner: true,
+  ems: false,
+  water: false,
+  food: false,
+  lifestyle: false,
+  about: false,
+  search: false,
+} as const;
+
+export type Section = keyof typeof liveSections;
+export const isLive = (section: Section) => liveSections[section];
+
+const allNav = [
   { id: "nutrition", label: "Nutrition", href: "/nutrition" },
   { id: "ems", label: "EMS Wellness", href: "/ems" },
   { id: "water", label: "Water", href: "/water" },
@@ -6,6 +24,8 @@ export const mainNav = [
   { id: "lifestyle", label: "Lifestyle", href: "/lifestyle" },
   { id: "partner", label: "Partner with us", href: "/partner" },
 ] as const;
+
+export const mainNav = allNav.filter((item) => isLive(item.id));
 
 export const company = {
   legalName: "Verde Centric Energy LLP",

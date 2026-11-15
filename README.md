@@ -25,6 +25,19 @@ Uploaded documents are stored in `UPLOAD_DIR`, outside the public folder, and se
 - No product claim, certification, price or review is published unless the owner has supplied and approved it.
 - Design tokens live in `src/app/globals.css` and follow the approved Phase 2 prototype.
 
+## Customer accounts
+Customers sign in at `/login` with their email address and a 6-digit code sent by email (valid 10 minutes, 5 tries). There is no password.
+New emails get an account on first sign-in. Orders placed with the same email, including guest orders from before, show under `/account/orders`.
+Staff emails cannot sign in here; staff use `/admin/login`.
+
+Customers can report a wrong or damaged delivery at `/account/returns` within 24 hours of the order being marked delivered. The order moves to
+"Return requested" in the admin and an email goes to the support address.
+
+Sign-in codes are sent with the SMTP settings in `.env.example` (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`), set on the server only.
+
+## Hidden sections
+EMS, Water, Food, Lifestyle, About and Search are hidden until they are ready. Switch a section back on in `liveSections` in `src/lib/site.ts`.
+
 ## Adding products
 Admin → Products → New product. Save it, then add options (size, SKU, MRP, price, stock) and images.
 A product appears in the shop only when it is **Active** and has at least one option on sale.

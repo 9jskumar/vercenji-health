@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { CartCount } from "./CartCount";
 import { MainNav, NavList } from "./MainNav";
+import { isLive } from "@/lib/site";
 
 export function SiteHeader() {
   return (
@@ -36,13 +37,15 @@ export function SiteHeader() {
           <MainNav />
         </Suspense>
         <div className="ml-auto flex items-center gap-1.5">
-          <Link href="/search" aria-label="Search" className="flex size-11 items-center justify-center rounded-full text-green">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" />
-              <path d="M20 20l-3.5-3.5" />
-            </svg>
-          </Link>
-          <Link href="/login" aria-label="Account" className="flex size-11 items-center justify-center rounded-full text-green">
+          {isLive("search") && (
+            <Link href="/search" aria-label="Search" className="flex size-11 items-center justify-center rounded-full text-green">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+            </Link>
+          )}
+          <Link href="/account" aria-label="My account" className="flex size-11 items-center justify-center rounded-full text-green">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
               <circle cx="12" cy="8" r="4" />
               <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" />
