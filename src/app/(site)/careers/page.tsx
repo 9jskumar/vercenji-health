@@ -44,13 +44,13 @@ export default function CareersPage({ searchParams }: PageProps<"/careers">) {
               <Link href="/careers/future-opportunities" className="font-bold text-ivory underline underline-offset-4">Submit your profile</Link>
             </div>
           </div>
-          <Image src="/brand/vercenji-emblem-gold.png" alt="" width={190} height={190} className="mx-auto opacity-90" />
+          <Image src="/brand/vercenji-emblem-gold.png" unoptimized alt="" width={190} height={190} className="mx-auto opacity-90" />
         </div>
       </section>
 
       <section className="border-b border-line bg-white">
         <div className="mx-auto flex max-w-[900px] flex-col items-center gap-4 px-4 py-16 text-center sm:px-6">
-          <Image src="/brand/vercenji-emblem-green.png" alt="" width={48} height={48} />
+          <Image src="/brand/vercenji-emblem-green.png" unoptimized alt="" width={48} height={48} />
           <p className="m-0 font-serif text-[clamp(21px,2.6vw,28px)] leading-[1.45] text-forest">{careersCopy.intro}</p>
         </div>
       </section>

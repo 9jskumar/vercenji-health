@@ -54,7 +54,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-[1240px] flex-col gap-11 px-6 pt-16 pb-7">
         <div className="flex flex-wrap gap-x-14 gap-y-10">
           <div className="flex max-w-[340px] flex-[1_1_260px] flex-col gap-[18px]">
-            <Image src="/brand/vercenji-logo-gold.png" alt="Vercenji" width={142} height={64} className="h-16 w-auto self-start" />
+            <Image src="/brand/vercenji-logo-gold-3x.png" alt="Vercenji" width={142} height={64} unoptimized className="h-16 w-auto self-start" />
             <p className="m-0 leading-relaxed text-[#CFC8B8]">
               Nourish. Move. Hydrate. Live. One wellness brand, five verticals and one connected experience.
             </p>

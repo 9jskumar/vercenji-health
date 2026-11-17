@@ -46,14 +46,14 @@ export default function Home() {
           <div aria-hidden="true" className="absolute -top-[140px] -right-[180px] size-[640px] rounded-full border border-[#3E6A4A]" />
           <div aria-hidden="true" className="absolute -bottom-[160px] -left-[120px] size-[420px] rounded-full border border-[#3E6A4A]" />
           {/* Replaced by the lifestyle photograph or muted video once supplied. */}
-          <Image src="/brand/vercenji-emblem-gold.png" alt="" width={220} height={220} className="relative opacity-95" priority />
+          <Image src="/brand/vercenji-emblem-gold.png" unoptimized alt="" width={220} height={220} className="relative opacity-95" priority />
         </div>
       </section>
 
       {/* Intro */}
       <section className="border-y border-line bg-white">
         <div className="mx-auto flex max-w-[860px] flex-col items-center gap-5 px-6 py-[72px] text-center">
-          <Image src="/brand/vercenji-emblem-green.png" alt="" width={56} height={56} />
+          <Image src="/brand/vercenji-emblem-green.png" unoptimized alt="" width={56} height={56} />
           <p className="m-0 font-serif text-[clamp(24px,3vw,34px)] leading-[1.35] text-forest">
             Vercenji is a quality-first wellness house. We bring nutrition, movement, hydration and healthy food together, so
             better everyday choices are easier to make and easier to trust.
