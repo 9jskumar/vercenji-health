@@ -19,6 +19,11 @@ export function SiteHeader() {
             <Link href="/help" className="text-ivory no-underline">
               Help
             </Link>
+            {isLive("careers") && (
+              <Link href="/careers" className="text-ivory no-underline">
+                Careers
+              </Link>
+            )}
           </span>
         </div>
       </div>

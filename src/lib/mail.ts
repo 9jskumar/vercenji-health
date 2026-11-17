@@ -24,23 +24,29 @@ function transport(): Transporter {
   return transporter;
 }
 
-export type Mail = { to: string; subject: string; text: string; html?: string };
+export type Mail = { to: string; subject: string; text: string; html?: string; replyTo?: string };
 
 /** Sends one email. Without SMTP settings, development builds print it to the console instead. */
 export async function sendMail(mail: Mail): Promise<boolean> {
+  return (await sendMailWithResult(mail)).ok;
+}
+
+/** Like sendMail, but also says why a message was not sent (for the recruitment email log). */
+export async function sendMailWithResult(mail: Mail): Promise<{ ok: boolean; error?: string }> {
   if (!mailEnabled()) {
     if (process.env.NODE_ENV !== "production") {
       console.info(`[mail] to ${mail.to}: ${mail.subject}\n${mail.text}`);
-      return true;
+      return { ok: true };
     }
     console.error("[mail] SMTP is not configured; email not sent");
-    return false;
+    return { ok: false, error: "Email is not set up on the server (SMTP settings missing)." };
   }
   try {
     await transport().sendMail({ from: process.env.MAIL_FROM || process.env.SMTP_USER, ...mail });
-    return true;
+    return { ok: true };
   } catch (e) {
-    console.error("[mail] send failed", e instanceof Error ? e.message : e);
-    return false;
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("[mail] send failed", msg);
+    return { ok: false, error: msg.slice(0, 300) };
   }
 }

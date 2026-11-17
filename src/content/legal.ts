@@ -30,6 +30,8 @@ export const legalPages: LegalPage[] = [
       "Whether customer data will also be handled from the UAE once the UAE store opens",
       "Country of the hosting data centre, to state where data is stored",
       "How long customer accounts are kept, and whether inactive accounts are closed automatically",
+      "How long job applications and CVs are kept (the admin is set to 12 months), and what happens to the records of people who are hired",
+      "Whether reference or background checks are carried out on shortlisted candidates, and by whom",
     ],
     sections: [
       { heading: "Who we are", body: [`This notice explains how ${who}, registered at ${company.registeredAddress}, handles personal information collected through this website.`] },
@@ -42,6 +44,7 @@ export const legalPages: LegalPage[] = [
             "When you report a problem with a delivery: the reason and details you give.",
             "When you pay: Razorpay processes your payment on its own secure page. We receive the payment status, amount and method (for example UPI or card), but never your card number, UPI PIN or bank login.",
             "When you apply to become a partner: the details you enter in the application and any documents you upload.",
+            "When you apply for a job or submit your profile for future opportunities: your name, contact details, location, work experience, employment status, qualifications, current or previous employer, LinkedIn profile, expected salary, notice period, cover letter and CV, together with the time you gave consent. Our recruitment team adds notes and status updates while reviewing your application.",
             "When you join our mailing list: your email address and the time you agreed.",
             "Technical information: your IP address, used to protect forms from abuse and kept in security logs.",
           ],
@@ -54,6 +57,7 @@ export const legalPages: LegalPage[] = [
             "To process, deliver and support your orders, and to issue GST invoices.",
             "To let you sign in to your account, see your orders and request returns.",
             "To review partnership applications and contact you about yours.",
+            "To assess job applications and profiles, contact candidates about interviews and outcomes, and consider profiles for future vacancies.",
             "To send marketing emails, only if you ticked the box to receive them.",
             "To keep the website secure and prevent fraud.",
             "To meet our legal and tax obligations.",
@@ -83,6 +87,7 @@ export const legalPages: LegalPage[] = [
         body: [
           [
             "Partnership applications that do not go ahead are deleted 24 months after they are received, together with uploaded documents.",
+            "Job applications and profiles for future opportunities are kept for 12 months after they are received, then deleted together with the CV. You can ask us to delete yours sooner.",
             "Order and invoice records are kept for as long as tax and accounting law requires.",
             "Mailing list details are kept until you unsubscribe.",
             "Customer accounts are kept until you ask us to close them. Orders in a closed account are still kept as order and invoice records.",
@@ -92,7 +97,7 @@ export const legalPages: LegalPage[] = [
       {
         heading: "How we protect it",
         body: [
-          "The website uses encrypted connections. Uploaded documents are stored outside the public website and only authorised staff can open them. Staff accounts use two-factor sign-in, and staff actions are logged.",
+          "The website uses encrypted connections. Uploaded documents, including CVs, are stored outside the public website and only authorised staff can open them. Staff accounts use two-factor sign-in, and staff actions are logged.",
         ],
       },
       {

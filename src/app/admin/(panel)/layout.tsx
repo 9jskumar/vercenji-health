@@ -38,6 +38,7 @@ export default function PanelLayout({ children }: LayoutProps<"/admin">) {
             <Link href="/admin/applications" className="text-ivory">Partner applications</Link>
             <Link href="/admin/orders" className="text-ivory">Orders</Link>
             <Link href="/admin/products" className="text-ivory">Products</Link>
+            <Link href="/admin/careers" className="text-ivory">Careers</Link>
           </nav>
           <Suspense fallback={null}>
             <StaffBar />

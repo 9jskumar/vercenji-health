@@ -56,3 +56,27 @@ An order is marked paid only by a verified signature from Razorpay: either the s
 Delivery charges are set with `SHIPPING_FLAT_RUPEES` and `SHIPPING_FREE_ABOVE_RUPEES`. The owner has confirmed free delivery from ₹3,000; the charge for smaller orders is still to be confirmed, and until `SHIPPING_FLAT_RUPEES` is set no charge is added.
 
 Orders are managed at `/admin/orders` (owner, or staff with the `orders` role). Staff move orders through processing, shipped (courier and tracking number required) and delivered. Cancelling a paid order returns its stock and reminds staff to issue the refund in the Razorpay dashboard; refunds from the admin come later.
+
+## Careers and recruitment
+The public careers portal is at `/careers` (vacancies, filters, job pages at `/careers/<title>-<reference>`, the application form at `.../apply`,
+and "Submit your profile" at `/careers/future-opportunities`). Staff manage it at `/admin/careers`.
+
+- **Who can use it:** owners, and staff with the `recruitment` role (`npm run staff:create -- --email … --role recruitment`). Permissions:
+  `careers.manage` (vacancies, settings, templates, deleting candidate data), `careers.applications` (candidates, status, notes, emails) and
+  `careers.cvs` (CV downloads and CSV export).
+- **Vacancies:** Admin → Careers → Vacancies → New vacancy. Save as draft, preview, publish, pause (hide temporarily), close, duplicate or
+  delete (only if it has no applications). A vacancy stops taking applications at the end of its deadline day (India time); "Close all expired"
+  tidies them up. Nothing is published unless staff publish it, and no sample vacancies are included.
+- **Email:** set the recruitment notification address(es) in Admin → Careers → Settings. Until one is set, new applications are logged but
+  nobody is emailed. Candidates get an automatic acknowledgement. Interview, shortlist, selection, rejection and on-hold emails use editable
+  templates with `{{name}}`, `{{position}}`, `{{reference}}` and `{{details}}`. Every email (sent, failed or skipped) is logged on the candidate.
+- **CVs:** PDF, DOC or DOCX up to 5 MB, checked by their contents (not the file name). Files with macros, scripts or embedded files are refused.
+  CVs are stored in `UPLOAD_DIR/careers/<application>/` with random names, outside the public folder, and are downloaded only through
+  `/admin/careers/cv/<id>` by signed-in staff with `careers.cvs`. Every download and export is written to the audit log.
+- **Spam protection:** hidden honeypot field, a signed form timestamp (instant or very old submissions are refused), per-connection and
+  per-email limits, and one application per email per vacancy every 30 days.
+- **Data retention:** each application has a "keep until" date (12 months by default, set in Settings). Staff with `careers.manage` can delete a
+  candidate's data permanently from the candidate page, for example on request.
+- **SEO:** `/careers` and each open vacancy have their own title, description, canonical URL and social tags; open vacancies carry
+  JobPosting structured data and are listed in `/sitemap.xml`. Closed or expired vacancies stay reachable but are `noindex` and drop out of the
+  sitemap. `/robots.txt` keeps admin, account, checkout and application-form pages out of search engines.

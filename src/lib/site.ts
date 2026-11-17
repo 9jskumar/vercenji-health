@@ -11,6 +11,7 @@ export const liveSections = {
   lifestyle: false,
   about: false,
   search: false,
+  careers: true,
 } as const;
 
 export type Section = keyof typeof liveSections;
