@@ -28,6 +28,7 @@ const columns: { title: string; links: [label: string, href: string, section?: S
     title: "Help",
     links: [
       ["About Vercenji", "/about", "about"],
+      ["Careers", "/careers", "careers"],
       ["FAQ and contact", "/help"],
       ["My account", "/account"],
       ["Track your order", "/account/orders"],

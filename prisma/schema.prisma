@@ -595,3 +595,232 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([actorId, createdAt])
 }
+
+// ───────────────────────────── Careers and recruitment ─────────────────────────────
+// Vacancies are written by staff in /admin/careers. Nothing is seeded as a real job.
+// CVs live in UPLOAD_DIR/careers/<applicationId>/, outside the public folder, and are served
+// only to staff with the careers.cvs permission.
+
+enum JobStatus {
+  DRAFT // staff only
+  PUBLISHED // listed and accepting applications until the deadline
+  PAUSED // temporarily hidden, can be published again
+  CLOSED // no longer accepting applications; the page stays up with a notice
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+enum WorkArrangement {
+  ON_SITE
+  REMOTE
+  HYBRID
+}
+
+enum ExperienceLevel {
+  FRESHER // 0 to 1 year
+  JUNIOR // 1 to 3 years
+  MID // 3 to 6 years
+  SENIOR // 6 to 10 years
+  LEAD // 10+ years
+}
+
+enum DepartmentGroup {
+  VERTICAL // one of the five business verticals
+  FUNCTION // company-wide function such as Finance or HR
+}
+
+model JobDepartment {
+  id        String                 @id @default(cuid())
+  slug      String                 @unique
+  name      String
+  group     DepartmentGroup        @default(FUNCTION)
+  sortOrder Int                    @default(0)
+  isActive  Boolean                @default(true)
+  jobs      JobVacancyDepartment[]
+}
+
+model JobVacancy {
+  id               String                 @id @default(cuid())
+  reference        String                 @unique // e.g. VJ-2026-4KQ8M, shown on the job page and in the URL
+  slug             String
+  title            String
+  status           JobStatus              @default(DRAFT)
+  employmentType   EmploymentType
+  workArrangement  WorkArrangement
+  experienceLevel  ExperienceLevel
+  experienceText   String // e.g. "2 to 4 years in FMCG sales"
+  education        String
+  city             String
+  state            String
+  country          String                 @default("IN") @db.Char(2)
+  openings         Int                    @default(1)
+  salaryMin        Int? // whole rupees
+  salaryMax        Int?
+  salaryPeriod     String? // YEAR or MONTH
+  showSalary       Boolean                @default(false)
+  compensationNote String?                @db.Text
+  shortDescription String                 @db.VarChar(400)
+  summary          String                 @db.Text
+  responsibilities String                 @db.Text // one per line
+  skills           String                 @db.Text // one per line
+  preferred        String?                @db.Text // one per line
+  deadline         DateTime? // last day applications are accepted (end of that day, India time)
+  isUrgent         Boolean                @default(false)
+  isFeatured       Boolean                @default(false)
+  seoTitle         String?
+  seoDescription   String?                @db.VarChar(200)
+  publishedAt      DateTime?
+  closedAt         DateTime?
+  createdById      String?
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  departments      JobVacancyDepartment[]
+  applications     JobApplication[]
+
+  @@index([status, publishedAt])
+}
+
+model JobVacancyDepartment {
+  jobId        String
+  departmentId String
+  job          JobVacancy    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  department   JobDepartment @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@id([jobId, departmentId])
+}
+
+enum ApplicationKind {
+  VACANCY // applied to a specific vacancy
+  SPECULATIVE // "Submit your profile: future opportunities"
+}
+
+enum CandidateStatus {
+  NEW
+  UNDER_REVIEW
+  SHORTLISTED
+  INTERVIEW_SCHEDULED
+  INTERVIEW_COMPLETED
+  SELECTED
+  REJECTED
+  ON_HOLD
+}
+
+model JobApplication {
+  id                   String                     @id @default(cuid())
+  reference            String                     @unique // e.g. VC-2026-7HX3KP, shown to the candidate
+  kind                 ApplicationKind
+  jobId                String?
+  positionTitle        String // snapshot of the vacancy title, or the role the candidate named
+  interestArea         String? // speculative profiles: area of interest
+  fullName             String
+  email                String
+  phone                String // E.164 where possible
+  currentLocation      String
+  totalExperience      String
+  employmentStatus     String
+  education            String
+  currentEmployer      String?
+  linkedinUrl          String?
+  expectedSalary       String?
+  noticePeriod         String
+  coverLetter          String                     @db.Text
+  status               CandidateStatus            @default(NEW)
+  consentAt            DateTime
+  consentText          String                     @db.Text
+  privacyNoticeVersion String
+  retainUntil          DateTime
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
+  job                  JobVacancy?                @relation(fields: [jobId], references: [id], onDelete: Restrict)
+  documents            CandidateDocument[]
+  history              ApplicationStatusHistory[]
+  notes                CandidateNote[]
+  emails               RecruitmentEmailLog[]
+
+  @@index([status, createdAt])
+  @@index([jobId, createdAt])
+  @@index([email])
+}
+
+model CandidateDocument {
+  id            String         @id @default(cuid())
+  applicationId String
+  path          String // relative to UPLOAD_DIR; never under public/
+  originalName  String
+  mimeType      String
+  sizeBytes     Int
+  sha256        String         @db.Char(64)
+  createdAt     DateTime       @default(now())
+  application   JobApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+model ApplicationStatusHistory {
+  id            String           @id @default(cuid())
+  applicationId String
+  fromStatus    CandidateStatus?
+  toStatus      CandidateStatus
+  actorId       String?
+  createdAt     DateTime         @default(now())
+  application   JobApplication   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId, createdAt])
+}
+
+model CandidateNote {
+  id            String         @id @default(cuid())
+  applicationId String
+  authorId      String
+  body          String         @db.Text
+  createdAt     DateTime       @default(now())
+  application   JobApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId, createdAt])
+}
+
+enum EmailLogStatus {
+  SENT
+  FAILED
+  SKIPPED // e.g. no recruitment email set yet
+}
+
+model RecruitmentEmailLog {
+  id            String          @id @default(cuid())
+  applicationId String?
+  kind          String // admin_alert, candidate_ack, candidate_update
+  templateKey   String?
+  toEmail       String
+  subject       String
+  body          String          @db.Text
+  status        EmailLogStatus
+  error         String?
+  sentById      String?
+  createdAt     DateTime        @default(now())
+  application   JobApplication? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId, createdAt])
+  @@index([createdAt])
+}
+
+// Key/value settings for recruitment, edited in /admin/careers/settings (e.g. notifyEmails, sendAcknowledgement).
+model RecruitmentSetting {
+  key         String   @id
+  value       Json
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+}
+
+model RecruitmentEmailTemplate {
+  key         String   @id // application_received, interview_invitation, shortlisted, selected, rejected, on_hold, status_update
+  name        String
+  subject     String
+  body        String   @db.Text
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+}

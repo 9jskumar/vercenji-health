@@ -16,6 +16,7 @@ export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
         db.partnerApplication.count({ where: { createdAt: { gte: daysAgo(7) } } }),
       ])
     : [[], 0];
+  const newCandidates = hasPermission(staff.permissions, PERMISSIONS.careersApplications) ? await db.jobApplication.count({ where: { status: "NEW" } }) : 0;
   const count = (s: ApplicationStatus) => byStatus.find((r) => r.status === s)?._count ?? 0;
 
   return (
@@ -36,6 +37,15 @@ export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
               </Link>
             ))}
           </div>
+        </section>
+      )}
+      {hasPermission(staff.permissions, PERMISSIONS.careersApplications) && (
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-5 ring-1 ring-line">
+          <span className="flex flex-col">
+            <strong className="text-charcoal">Careers</strong>
+            <span className="text-sm text-stone">{newCandidates} new job application(s) awaiting review</span>
+          </span>
+          <Link href="/admin/careers" className="btn-ghost px-5 py-2.5 text-sm">Open recruitment</Link>
         </section>
       )}
       <p className="m-0 text-sm text-stone">Customers and content screens arrive in later pull requests.</p>
