@@ -30,7 +30,7 @@ export default function PanelLayout({ children }: LayoutProps<"/admin">) {
       <header className="bg-forest text-ivory">
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-x-8 gap-y-3 px-6 py-4">
           <Link href="/admin" className="flex items-center gap-3 no-underline">
-            <Image src="/brand/vercenji-emblem-gold.png" alt="" width={36} height={36} />
+            <Image src="/brand/vercenji-emblem-gold.png" unoptimized alt="" width={36} height={36} />
             <span className="font-serif text-xl text-ivory">Vercenji Admin</span>
           </Link>
           <nav aria-label="Admin" className="flex flex-1 flex-wrap gap-5 text-sm font-semibold">

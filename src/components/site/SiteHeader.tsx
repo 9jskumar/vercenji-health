@@ -30,7 +30,8 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-x-8 gap-y-3 px-6 py-3.5">
         <Link href="/" aria-label="Vercenji home" className="flex shrink-0 items-center">
           <Image
-            src="/brand/vercenji-logo-green.png"
+            src="/brand/vercenji-logo-green-3x.png"
+            unoptimized
             alt="Vercenji"
             width={120}
             height={52}
