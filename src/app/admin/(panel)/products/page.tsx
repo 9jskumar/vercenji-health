@@ -66,7 +66,7 @@ export default async function ProductsAdmin({ searchParams }: PageProps<"/admin/
                   <td className="p-3">{verticalText[p.vertical]}</td>
                   <td className="p-3">{prices.length ? formatMoney(Math.min(...prices)) : <span className="text-[#9B2C2C]">No options</span>}</td>
                   <td className="p-3">{stock}{low && active.length > 0 && <span className="ml-2 text-xs font-semibold text-[#9B2C2C]">Low</span>}</td>
-                  <td className="p-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusText[p.status][1]}`}>{statusText[p.status][0]}</span></td>
+                  <td className="p-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusText[p.status][1]}`}>{statusText[p.status][0]}</span>{p.status === "ACTIVE" && active.length === 0 && <span className="mt-1 block text-xs font-semibold text-[#9B2C2C]">Not in shop: no option on sale</span>}</td>
                 </tr>
               );
             })}

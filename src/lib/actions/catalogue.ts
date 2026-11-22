@@ -154,17 +154,24 @@ export async function saveProduct(_prev: FormState, form: FormData): Promise<For
 const rupees = (label: string) =>
   z.string().trim().regex(/^\d{1,7}(\.\d{1,2})?$/, `Enter ${label} in rupees, e.g. 360 or 360.50.`).transform((v) => Math.round(Number(v) * 100));
 
+const OPTION_NAME_MAX = 120;
+
 const variantSchema = z
   .object({
     productId: z.string().min(1).max(64),
     variantId: z.string().max(64).optional(),
-    sku: z.string().trim().min(2).max(60).regex(/^[A-Za-z0-9._-]+$/, "SKU: letters, numbers, dot, dash or underscore."),
-    name: z.string().trim().min(1, "Name the option, e.g. 60 capsules.").max(80),
+    sku: z
+      .string()
+      .trim()
+      .min(2, "The SKU needs at least 2 characters.")
+      .max(60, "Keep the SKU to 60 characters or fewer.")
+      .regex(/^[A-Za-z0-9._-]+$/, "The SKU can use only letters, numbers, dot, dash or underscore (no spaces)."),
+    name: z.string().trim().min(1, "Name the option, e.g. 60 capsules.").max(OPTION_NAME_MAX, `Keep the option name to ${OPTION_NAME_MAX} characters or fewer, e.g. 60 capsules. Put longer text in the product description.`),
     mrp: rupees("the MRP"),
     price: rupees("the price"),
-    stock: z.coerce.number().int().min(0).max(1_000_000),
-    lowStockAt: z.coerce.number().int().min(0).max(100_000),
-    weightGrams: z.string().trim().regex(/^\d{0,6}$/).optional(),
+    stock: z.coerce.number({ error: "Enter the stock as a whole number." }).int("Enter the stock as a whole number.").min(0, "Stock cannot be below 0.").max(1_000_000, "Stock looks too large."),
+    lowStockAt: z.coerce.number({ error: "Enter the low-stock alert as a whole number." }).int("Enter the low-stock alert as a whole number.").min(0, "The low-stock alert cannot be below 0.").max(100_000, "The low-stock alert looks too large."),
+    weightGrams: z.string().trim().regex(/^\d{0,6}$/, "Enter the weight in whole grams, e.g. 120.").optional(),
     allowPreorder: z.literal("on").optional(),
     isActive: z.literal("on").optional(),
   })

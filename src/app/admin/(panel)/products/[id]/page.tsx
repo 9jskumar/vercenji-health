@@ -24,7 +24,13 @@ export default async function EditProduct({ params, searchParams }: PageProps<"/
     db.productImage.findMany({ where: { productId: id }, orderBy: { sortOrder: "asc" } }),
   ]);
   if (!values) notFound();
-  const live = values.status === "ACTIVE" ? shopPath(values.vertical, values.slug) : null;
+  // Mirror the shop's own rule (getProduct): Active, plus at least one option on sale. Otherwise the shop page is a 404.
+  const path = shopPath(values.vertical, values.slug);
+  const hidden: string[] = [];
+  if (values.status !== "ACTIVE") hidden.push("Set Status to “Active (visible in the shop)” at the bottom of this page and click Save product.");
+  if (!variants.some((v) => v.isActive)) hidden.push("Add at least one option below with “On sale” ticked, and click Add option. Typing it in is not enough.");
+  if (!path) hidden.push("This vertical does not have shop pages yet.");
+  const live = hidden.length === 0 ? path : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -33,6 +39,12 @@ export default async function EditProduct({ params, searchParams }: PageProps<"/
         <h1 className="m-0 font-serif text-4xl font-normal text-forest">{values.name}</h1>
         {live && <Link href={live} className="text-sm font-semibold text-green underline" target="_blank">View in shop ↗</Link>}
       </div>
+      {hidden.length > 0 && (
+        <div role="status" className="flex flex-col gap-1 rounded-xl bg-[#FBF1DC] p-4 text-sm text-[#7A5A1E]">
+          <p className="m-0 font-semibold">Not in the shop yet. Customers who open its page see “page not found” until you:</p>
+          <ul className="m-0 pl-5">{hidden.map((h) => <li key={h}>{h}</li>)}</ul>
+        </div>
+      )}
       {created && <p role="status" className="m-0 rounded-xl bg-[#DCE6DC] p-3 text-sm font-semibold text-forest">Product created. Now add its options and images below.</p>}
 
       <section className="flex flex-col gap-3 rounded-2xl bg-white p-6 ring-1 ring-line">
