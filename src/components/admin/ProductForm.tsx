@@ -46,6 +46,9 @@ const slugify = (s: string) => s.toLowerCase().normalize("NFKD").replace(/[^a-z0
 
 export function ProductForm({ values, categories }: { values: ProductFormValues; categories: Cat[] }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveProduct, {});
+  // Options have their own Add/Save buttons; tell people when one is typed in but not saved.
+  const [unsavedOption, setUnsavedOption] = useState(false);
+  const submit = keepValuesSubmit(action);
   const [vertical, setVertical] = useState(values.vertical);
   const [slug, setSlug] = useState(values.slug);
   const [slugTouched, setSlugTouched] = useState(!!values.id);
@@ -53,7 +56,13 @@ export function ProductForm({ values, categories }: { values: ProductFormValues;
   const nutrition = vertical === "NUTRITION";
 
   return (
-    <form onSubmit={keepValuesSubmit(action)} className="flex flex-col gap-6">
+    <form
+      onSubmit={(ev) => {
+        setUnsavedOption(!!document.querySelector("[data-unsaved-option]"));
+        submit(ev);
+      }}
+      className="flex flex-col gap-6"
+    >
       {values.id && <input type="hidden" name="id" value={values.id} />}
       <Notice state={state} />
       <section className="grid grid-cols-1 gap-4 rounded-2xl bg-white p-6 ring-1 ring-line md:grid-cols-2">
@@ -146,6 +155,13 @@ export function ProductForm({ values, categories }: { values: ProductFormValues;
         <Input label="Search result description" name="seoDescription" defaultValue={values.seoDescription} maxLength={170} hint="Up to 170 characters" />
       </section>
 
+      {unsavedOption && !pending && (
+        <p role="alert" className="m-0 rounded-xl bg-[#FBF1DC] p-3 text-sm font-semibold text-[#7A5A1E]">
+          An option under Options, prices and stock is typed in but not saved. Scroll up and click Add option (or Save option) next to it.
+        </p>
+      )}
+      {/* Repeat the result next to the button, so an error is seen without scrolling back to the top. */}
+      <Notice state={state} />
       <button type="submit" disabled={pending} className="btn-primary self-start disabled:opacity-60">{pending ? "Saving…" : values.id ? "Save product" : "Create product"}</button>
     </form>
   );
