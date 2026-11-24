@@ -28,7 +28,7 @@ export const innovations = [
     key: "app",
     title: "Wireless app control",
     body: "Run sessions from a tablet or smartphone. Adjust each muscle group channel, set intensity from 0 to 100, and manage several clients with ease.",
-    detail: "12 preset programmes, including Warm-Up, Fitness, Cardio, Resistance and Relaxation, plus one customisable VIP mode.",
+    detail: "12 preset programmes plus one customisable VIP mode, listed below.",
   },
   {
     key: "harness",
@@ -47,15 +47,23 @@ export const innovations = [
   },
 ] as const;
 
+// The 12 preset modes and the VIP mode, named as they appear in the app (owner's screenshot, 2026-11-24).
+export const programmes = [
+  "Fitness", "Warm-up", "Cardio", "Relaxation", "Dermal", "Drainage",
+  "Cellulite", "Metabolic", "Slim", "Resistance", "Contractures", "Capillary",
+] as const;
+export const programmeNote =
+  "These are the names of the programmes in the app. They describe settings, not proven health or cosmetic results.";
+
 export const specs: [string, string][] = [
   ["Garment structure", "Integrated one-piece vest or separate split vest"],
   ["Fabric", "3 mm composite fabric, anti-pilling and wear-resistant"],
   ["Conductivity", "Light water spray on the fabric over the inner electrode pads"],
   ["Electrodes", "10 muscle groups; pads are movable, expandable and individually replaceable"],
   ["Cable and connector", "Detachable hidden cables with DB25 anti-drop connector"],
-  ["Control", "Vercenji Smart App on tablet or smartphone"],
+  ["Control", "Vercenji Health App on tablet or smartphone"],
   ["Intensity", "0 to 100, in fine steps"],
-  ["Programmes", "12 preset modes plus 1 customisable VIP mode"],
+  ["Programmes", "12 preset modes plus 1 customisable VIP mode (see the list above)"],
   ["Pulse parameters", "Frequency up to 120 Hz; pulse width up to 400 µs"],
   ["Power", "5000mAh plug-in wireless energy box"],
   ["Sizes", "XXS to 6XL"],
@@ -66,7 +74,7 @@ export const steps = [
   ["Wear", "Put on the hygienic cotton innerwear, then the Vercenji EMS vest. Adjust the width straps for a snug fit."],
   ["Wet", "Lightly spray water on the fabric over the inner electrode pads for good skin contact."],
   ["Connect", "Connect the suit's harness to the 5000mAh energy box with the DB25 connector."],
-  ["Select", "Open the Vercenji app, then choose the programme, session length and intensity for each muscle group."],
+  ["Select", "Open the Vercenji Health App, then choose the programme, session length and intensity for each muscle group."],
   ["Train", "Start the 20-minute session: simple guided movements combined with muscle stimulation, with the trainer adjusting as you go."],
 ] as const;
 
@@ -121,7 +129,7 @@ export const faqs: [string, string][] = [
   ],
   [
     "Is the suit wireless?",
-    "Yes. The suit connects to a portable 5000mAh energy box, and you control the session from the Vercenji app on a tablet or smartphone, so clients are not tied to a wall socket.",
+    "Yes. The suit connects to a portable 5000mAh energy box, and you control the session from the Vercenji Health App on a tablet or smartphone, so clients are not tied to a wall socket.",
   ],
   [
     "Which sizes are available?",

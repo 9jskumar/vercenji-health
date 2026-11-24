@@ -14,6 +14,8 @@ import {
   kit,
   kitOptions,
   muscleGroups,
+  programmeNote,
+  programmes,
   safety,
   specs,
   steps,
@@ -201,6 +203,16 @@ export default function EmsWellnessPage() {
                 </div>
               </div>
             ))}
+          </div>
+          <div id="programmes" className="flex scroll-mt-6 flex-col gap-4 rounded-[22px] border border-forest-line p-7">
+            <h3 className="m-0 font-serif text-2xl font-normal text-ivory">12 preset programmes and a VIP mode</h3>
+            <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+              {programmes.map((p) => (
+                <li key={p} className="rounded-full border border-gold-light/50 px-4 py-1.5 text-sm text-ivory">{p}</li>
+              ))}
+              <li className="rounded-full bg-gold-light px-4 py-1.5 text-sm font-semibold text-forest">VIP (customisable)</li>
+            </ul>
+            <p className="m-0 text-sm text-[#CFC8B8]">{programmeNote}</p>
           </div>
         </div>
       </section>
@@ -396,7 +408,7 @@ export default function EmsWellnessPage() {
               See the suit and app in action, ask about fit options and branding, and get a quotation for your studio.
             </p>
             <ul className="m-0 flex list-none flex-col gap-2 p-0 text-[15px]">
-              <li>Email: <a href={`mailto:${company.supportEmail}`} className="font-semibold text-gold-light underline">{company.supportEmail}</a></li>
+              <li>Email: <a href={`mailto:${company.enquiryEmail}`} className="font-semibold text-gold-light underline">{company.enquiryEmail}</a></li>
               <li>Phone: <a href={`tel:${company.supportPhone.replace(/\s/g, "")}`} className="font-semibold text-gold-light underline">{company.supportPhone}</a></li>
               <li>Opening a studio? See <Link href="/partner" className="font-semibold text-gold-light underline">partnership models</Link>.</li>
             </ul>

@@ -28,7 +28,7 @@ export function DemoRequestForm() {
         <h3 className="m-0 font-serif text-3xl font-normal text-forest">Thank you. Your request is with our team.</h3>
         <p className="m-0 leading-relaxed text-stone">
           We will contact you to arrange your demo or quotation. If it is urgent, email{" "}
-          <a href={`mailto:${company.supportEmail}`} className="text-green underline">{company.supportEmail}</a> or call{" "}
+          <a href={`mailto:${company.enquiryEmail}`} className="text-green underline">{company.enquiryEmail}</a> or call{" "}
           <a href={`tel:${company.supportPhone.replace(/\s/g, "")}`} className="text-green underline">{company.supportPhone}</a>.
         </p>
       </div>

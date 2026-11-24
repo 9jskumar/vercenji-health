@@ -64,7 +64,7 @@ export async function submitEquipmentEnquiry(_prev: EnquiryFormState, form: Form
     const country = enquiryCountries.find(([k]) => k === d.country)?.[1] ?? d.country;
     // Best effort: the enquiry is already saved and listed in the admin even if email is down.
     await sendMail({
-      to: company.supportEmail,
+      to: company.enquiryEmail,
       replyTo: d.email,
       subject: `EMS suit enquiry: ${interest} from ${d.name}`,
       text: [

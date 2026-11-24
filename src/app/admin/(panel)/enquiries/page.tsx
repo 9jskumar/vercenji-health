@@ -27,7 +27,7 @@ export default async function EnquiriesPage({ searchParams }: PageProps<"/admin/
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="flex flex-col gap-1">
           <h1 className="m-0 font-serif text-4xl font-normal text-forest">EMS enquiries</h1>
-          <p className="m-0 text-sm text-stone">Demo and quotation requests from the EMS Wellness page. Each one is also emailed to support.</p>
+          <p className="m-0 text-sm text-stone">Demo and quotation requests from the EMS Wellness page. Each one is also emailed to info@vercenji.com.</p>
         </div>
         <div className="flex flex-wrap gap-2 text-sm">
           <Link href="/admin/enquiries" className={`rounded-full px-3 py-1.5 font-semibold ${!status ? "bg-green text-white" : "bg-white text-green ring-1 ring-line"}`}>All</Link>
