@@ -36,6 +36,7 @@ export const company = {
   // Confirmed by the owner on 2026-11-13.
   registeredAddress: "Sun Pharma Road, Tandalja, Vadodara 390012, Gujarat, India",
   supportEmail: "support@vercenji.com",
+  enquiryEmail: "info@vercenji.com", // EMS demo and quotation requests (owner, 2026-11-24)
   supportPhone: "+91 97254 34579",
   grievanceOfficer: { name: "JS Kumar", email: "info@vercenji.com" },
   disputeCity: "Ahmedabad",
