@@ -13,6 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages: MetadataRoute.Sitemap = [
     { url: `${base}/`, changeFrequency: "weekly", priority: 1 },
     ...(isLive("nutrition") ? [{ url: `${base}/nutrition`, changeFrequency: "weekly" as const, priority: 0.9 }] : []),
+    ...(isLive("ems") ? [{ url: `${base}/vercenji-ems-wellness-training-suit`, changeFrequency: "monthly" as const, priority: 0.8 }] : []),
     ...(isLive("lifestyle") ? [{ url: `${base}/lifestyle`, changeFrequency: "weekly" as const, priority: 0.8 }] : []),
     ...(isLive("partner") ? [{ url: `${base}/partner`, changeFrequency: "monthly" as const, priority: 0.7 }] : []),
     { url: `${base}/help`, changeFrequency: "monthly", priority: 0.5 },

@@ -22,6 +22,13 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "21mb",
     },
   },
+  async redirects() {
+    // The EMS page lives at the address from the owner's content brief; keep the older short links working.
+    return [
+      { source: "/ems", destination: "/vercenji-ems-wellness-training-suit", permanent: true },
+      { source: "/ems/:path*", destination: "/vercenji-ems-wellness-training-suit", permanent: true },
+    ];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },

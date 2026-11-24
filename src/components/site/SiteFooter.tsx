@@ -8,7 +8,7 @@ const columns: { title: string; links: [label: string, href: string, section?: S
     title: "Shop",
     links: [
       ["Nutrition & Supplements", "/nutrition"],
-      ["EMS Wellness & Equipment", "/ems", "ems"],
+      ["EMS Wellness & Equipment", "/vercenji-ems-wellness-training-suit", "ems"],
       ["Pure Drinking Water", "/water", "water"],
       ["Healthy Food", "/food", "food"],
       ["Lifestyle & Wearables", "/lifestyle", "lifestyle"],

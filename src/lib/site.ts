@@ -5,7 +5,7 @@
 export const liveSections = {
   nutrition: true,
   partner: true,
-  ems: false,
+  ems: true, // EMS equipment page, turned on 2026-11-24
   water: false,
   food: false,
   lifestyle: false,
@@ -19,7 +19,7 @@ export const isLive = (section: Section) => liveSections[section];
 
 const allNav = [
   { id: "nutrition", label: "Nutrition", href: "/nutrition" },
-  { id: "ems", label: "EMS Wellness", href: "/ems" },
+  { id: "ems", label: "EMS Wellness", href: "/vercenji-ems-wellness-training-suit" },
   { id: "water", label: "Water", href: "/water" },
   { id: "food", label: "Healthy Food", href: "/food" },
   { id: "lifestyle", label: "Lifestyle", href: "/lifestyle" },
