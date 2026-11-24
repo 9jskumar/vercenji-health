@@ -9,7 +9,7 @@ import { isLive } from "@/lib/site";
 
 const verticals = [
   { key: "nutrition", n: "01", title: "Nutrition & Supplements", body: "Ayurvedic-inspired and everyday nutrition, with transparent ingredients and sourcing.", cta: "Shop Supplements", href: "/nutrition" },
-  { key: "ems", n: "02", title: "EMS Wellness", body: "Supervised EMS training sessions, plus professional EMS equipment for studios.", cta: "Discover EMS Wellness", href: "/ems" },
+  { key: "ems", n: "02", title: "EMS Wellness", body: "A wireless full-body EMS training suit for gyms, studios and personal trainers.", cta: "Discover EMS Wellness", href: "/vercenji-ems-wellness-training-suit" },
   { key: "water", n: "03", title: "Pure Drinking Water", body: "Drinking water for homes, offices and events, delivered on your schedule.", cta: "Order Drinking Water", href: "/water" },
   { key: "food", n: "04", title: "Healthy Food", body: "Balanced, freshly prepared meals and weekly plans from licensed partner kitchens.", cta: "Explore Healthy Meals", href: "/food" },
   { key: "lifestyle", n: "05", title: "Lifestyle & Wearables", body: "Activewear, wearables, bottles and accessories for active, healthy days.", cta: "Shop Lifestyle", href: "/lifestyle" },
@@ -31,7 +31,7 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/nutrition" className="btn-primary">Explore Products</Link>
-            {isLive("ems") && <Link href="/ems" className="btn-ghost">Discover EMS Wellness</Link>}
+            {isLive("ems") && <Link href="/vercenji-ems-wellness-training-suit" className="btn-ghost">Discover EMS Wellness</Link>}
           </div>
           <ul className="m-0 flex list-none flex-wrap gap-x-6 gap-y-2.5 p-0 pt-2 text-sm text-[#45453F]">
             {confirmedTrust.map((k) => (
@@ -115,14 +115,14 @@ export default function Home() {
           <div className="flex flex-[1_1_460px] flex-col gap-5">
             <div className="text-[13px] font-bold tracking-[0.18em] text-gold-light uppercase">EMS Wellness</div>
             <h2 className="m-0 font-serif text-[clamp(32px,4vw,48px)] leading-[1.1] font-normal text-ivory">
-              Supervised EMS training in focused sessions
+              Full-body EMS training in focused 20-minute sessions
             </h2>
             <p className="m-0 text-[17px] leading-relaxed text-[#CFC8B8]">
-              Electrical muscle stimulation adds gentle impulses to guided exercises. Every session is led by a trained coach,
-              after a short eligibility screening.
+              The Vercenji EMS suit works 10 muscle groups at once while clients move, with every channel controlled from a
+              tablet or smartphone. Built for commercial gyms, EMS studios and personal trainers.
             </p>
             <ol className="m-0 flex list-none flex-col gap-3 p-0">
-              {["Complete the safety screening and consent online", "Train in a fitted suit with your coach beside you", "Track your sessions in your account"].map((s, i) => (
+              {["Wireless app control with 12 preset programmes", "One-piece or split vest, sizes XXS to 6XL", "Portable 5000mAh energy box for a full day of sessions"].map((s, i) => (
                 <li key={s} className="flex items-center gap-3">
                   <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-gold-light font-serif text-gold-light">{i + 1}</span>
                   <span>{s}</span>
@@ -130,8 +130,8 @@ export default function Home() {
               ))}
             </ol>
             <div className="flex flex-wrap items-center gap-5 pt-2">
-              <Link href="/ems#register" className="btn-light">Register interest in a trial</Link>
-              <Link href="/ems/equipment" className="font-bold text-ivory underline underline-offset-4">EMS equipment for studios</Link>
+              <Link href="/vercenji-ems-wellness-training-suit#demo" className="btn-light">Request a demo</Link>
+              <Link href="/vercenji-ems-wellness-training-suit" className="font-bold text-ivory underline underline-offset-4">Explore the technology</Link>
             </div>
           </div>
         </div>
