@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { cartLines, getCart } from "@/lib/cart";
 import { priceLines } from "@/lib/orders";
-import { isTestMode, paymentsEnabled } from "@/lib/razorpay";
+import { checkoutAvailable, isTestMode } from "@/lib/razorpay";
 import { formatMoney } from "@/lib/money";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
 
@@ -33,7 +33,7 @@ async function Checkout() {
   }
   const totals = priceLines(lines);
   const currency = lines[0].variant.currency;
-  const enabled = paymentsEnabled();
+  const enabled = await checkoutAvailable();
 
   return (
     <div className="flex flex-wrap gap-8">
@@ -45,7 +45,7 @@ async function Checkout() {
         )}
         {enabled && isTestMode() && (
           <p role="status" className="m-0 rounded-2xl bg-[#FBF1DC] p-4 text-[15px] text-[#7A5A1E]">
-            Test mode: payments use Razorpay test cards and no money is taken.
+            Test mode (visible to signed-in staff only): payments use Razorpay test cards and no money is taken.
           </p>
         )}
         <CheckoutForm enabled={enabled} />

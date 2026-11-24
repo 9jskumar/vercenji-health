@@ -1,5 +1,6 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { getStaff } from "@/lib/auth/session";
 
 // Razorpay is used only through its hosted checkout: card and bank details never reach this server.
 // Keys live in server environment variables; only the public key id is sent to the browser.
@@ -24,6 +25,17 @@ export function publicKeyId() {
 /** True when the configured keys are Razorpay test keys, so the site can say so. */
 export function isTestMode() {
   return keys().keyId.startsWith("rzp_test_");
+}
+
+/**
+ * Whether this visitor may pay online. With live keys, everyone. With test keys, only someone
+ * signed in to the admin in the same browser, so the public cannot place test orders that look
+ * paid while the owner is still trying Razorpay out.
+ */
+export async function checkoutAvailable() {
+  if (!paymentsEnabled()) return false;
+  if (!isTestMode()) return true;
+  return (await getStaff()) !== null;
 }
 
 async function call<T>(path: string, init?: { method?: string; body?: unknown }): Promise<T> {
