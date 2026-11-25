@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
 import { cartLines, getCart } from "@/lib/cart";
 import { ORDER_COOKIE, newOrderNumber, priceLines, recordCapturedPayment, recordPaymentStatus } from "@/lib/orders";
-import { createRazorpayOrder, fetchPayment, paymentsEnabled, publicKeyId, verifyPaymentSignature } from "@/lib/razorpay";
+import { checkoutAvailable, createRazorpayOrder, fetchPayment, isTestMode, publicKeyId, verifyPaymentSignature } from "@/lib/razorpay";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 import { indianStates } from "@/content/checkout";
@@ -51,7 +51,7 @@ const schema = z.object({
 });
 
 export async function placeOrder(_prev: CheckoutState, form: FormData): Promise<CheckoutState> {
-  if (!paymentsEnabled()) return { error: "Online payment is not switched on yet. Please try again later." };
+  if (!(await checkoutAvailable())) return { error: "Online payment is not switched on yet. Please try again later." };
   if (!rateLimit(`checkout:${await clientIp()}`, 10, 60 * 60 * 1000)) {
     return { error: "Too many checkout attempts from your connection. Please try again in an hour." };
   }
@@ -113,7 +113,7 @@ export async function placeOrder(_prev: CheckoutState, form: FormData): Promise<
               hsnCode: l.product.hsnCode,
             })),
           },
-          events: { create: { status: "PENDING_PAYMENT", note: "Order placed online." } },
+          events: { create: { status: "PENDING_PAYMENT", note: isTestMode() ? "TEST order placed with Razorpay test keys. No money was taken. Do not ship." : "Order placed online." } },
         },
         select: { id: true, number: true },
       });

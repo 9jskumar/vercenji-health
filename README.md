@@ -51,6 +51,8 @@ Checkout uses Razorpay's hosted payment window, so card, UPI and bank details ne
 3. On the server only, set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` and `RAZORPAY_WEBHOOK_SECRET` in `.env`, then restart the app. Never commit these values or send them by chat or email.
 4. Keys starting `rzp_test_` show a "Test mode" banner at checkout. Switch to live keys only after the owner signs off test orders.
 
+While test keys (`rzp_test_…`) are set, checkout is open only to staff signed in to `/admin` in the same browser, so the public cannot place test orders. Test orders carry a "do not ship" note and the orders page shows a test-mode banner. Switching to live keys (`rzp_live_…`) opens checkout to everyone.
+
 An order is marked paid only by a verified signature from Razorpay: either the signed browser response (checked and then read back from Razorpay's API) or the signed webhook. Each webhook event is processed once. Stock is taken when payment is captured; if it ran out in the meantime, a note appears on the order.
 
 Delivery charges are set with `SHIPPING_FLAT_RUPEES` and `SHIPPING_FREE_ABOVE_RUPEES`. The owner has confirmed free delivery from ₹3,000; the charge for smaller orders is still to be confirmed, and until `SHIPPING_FLAT_RUPEES` is set no charge is added.
