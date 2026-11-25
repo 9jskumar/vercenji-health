@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { asPairs, asStringList, getProduct, mediaUrl } from "@/lib/catalogue";
 import { productDisclaimer } from "@/lib/site";
+import { getMarket } from "@/lib/market";
 import type { Vertical } from "@/generated/prisma/enums";
 import { AddToCart } from "./AddToCart";
 
@@ -12,8 +13,10 @@ type Props = { vertical: Vertical; params: Promise<{ slug: string }>; section: {
 export async function ProductDetail({ vertical, params, section }: Props) {
   await connection();
   const { slug } = await params;
-  const p = await getProduct(vertical, slug);
-  if (!p || p.variants.length === 0) notFound();
+  const market = await getMarket();
+  const p = await getProduct(vertical, slug, market.currency);
+  // A product with no option in the UAE store's currency is still shown there, without a price.
+  if (!p || (p.variants.length === 0 && market.code === "IN")) notFound();
 
   const claims = asStringList(p.approvedClaims);
   const specs = asPairs(p.specifications);
@@ -76,7 +79,13 @@ export async function ProductDetail({ vertical, params, section }: Props) {
               {claims.map((c) => <li key={c}>{c}</li>)}
             </ul>
           )}
-          <AddToCart variants={p.variants.map((v) => ({ id: v.id, name: v.name, priceMinor: v.priceMinor, mrpMinor: v.mrpMinor, currency: v.currency, stock: v.stock, allowPreorder: v.allowPreorder }))} />
+          {p.variants.length > 0 ? (
+            <AddToCart variants={p.variants.map((v) => ({ id: v.id, name: v.name, priceMinor: v.priceMinor, mrpMinor: v.mrpMinor, currency: v.currency, stock: v.stock, allowPreorder: v.allowPreorder }))} />
+          ) : (
+            <p role="status" className="m-0 rounded-2xl bg-[#FBF1DC] p-4 text-[15px] text-[#7A5A1E]">
+              This product is not yet available in the {market.label} store.
+            </p>
+          )}
           {vertical === "NUTRITION" && (
             <p className="m-0 rounded-2xl bg-white p-4 text-sm leading-relaxed text-stone ring-1 ring-line">{productDisclaimer}</p>
           )}

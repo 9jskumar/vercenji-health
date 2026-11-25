@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { listCategories, listProducts, SORTS, type SortKey } from "@/lib/catalogue";
+import { getMarket } from "@/lib/market";
 import type { Vertical } from "@/generated/prisma/enums";
 import { ProductCard } from "./ProductCard";
 
@@ -21,9 +22,10 @@ export async function CatalogueListing({ vertical, basePath, searchParams, audie
   const q = one(sp.q)?.trim() || undefined;
   const sort = (Object.keys(SORTS) as SortKey[]).find((k) => k === sp.sort) ?? "popular";
   const audience = audiences?.find((a) => a.id === one(sp.for))?.id;
+  const { currency } = await getMarket();
   const [categories, products] = await Promise.all([
-    listCategories(vertical),
-    listProducts({ vertical, category, q, sort, audience }),
+    listCategories(vertical, currency),
+    listProducts({ vertical, currency, category, q, sort, audience }),
   ]);
   const link = (patch: Record<string, string | undefined>) => {
     const u = new URLSearchParams();

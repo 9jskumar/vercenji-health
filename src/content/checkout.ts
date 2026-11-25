@@ -7,6 +7,9 @@ export const indianStates = [
   "Uttar Pradesh", "Uttarakhand", "West Bengal",
 ] as const;
 
+// Emirates for UAE delivery addresses.
+export const uaeEmirates = ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Umm Al Quwain", "Ras Al Khaimah", "Fujairah"] as const;
+
 export const orderStatusLabels = {
   PENDING_PAYMENT: "Awaiting payment",
   PAID: "Paid",

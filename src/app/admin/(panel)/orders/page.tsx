@@ -6,6 +6,7 @@ import { dateTime } from "@/content/admin";
 import { orderStatusLabels, orderStatusTone } from "@/content/checkout";
 import { formatMoney } from "@/lib/money";
 import { isTestMode, paymentsEnabled } from "@/lib/razorpay";
+import { stripeEnabled, stripeTestMode } from "@/lib/stripe";
 import { OrderStatus } from "@/generated/prisma/enums";
 
 const PAGE_SIZE = 25;
@@ -47,12 +48,15 @@ export default async function OrdersPage({ searchParams }: PageProps<"/admin/ord
         <span className="text-sm text-stone">{total} found</span>
       </div>
 
-      {paymentsEnabled() && isTestMode() && (
-        <p role="status" className="m-0 rounded-2xl bg-[#FBF1DC] p-4 text-[15px] text-[#7A5A1E]">
-          Razorpay is in <strong>test mode</strong>. Orders paid now used test cards: no money was taken, so do not ship them.
-          Only staff signed in here can reach checkout until live keys are added.
+      {[
+        paymentsEnabled() && isTestMode() && "Razorpay (India)",
+        stripeEnabled() && stripeTestMode() && "Stripe (UAE)",
+      ].filter(Boolean).map((g) => (
+        <p key={String(g)} role="status" className="m-0 rounded-2xl bg-[#FBF1DC] p-4 text-[15px] text-[#7A5A1E]">
+          {g} is in <strong>test mode</strong>. Its orders used test cards: no money was taken, so do not ship them.
+          Only staff signed in here can reach that checkout until live keys are added.
         </p>
-      )}
+      ))}
 
       <form className="flex flex-wrap items-end gap-3 rounded-2xl bg-white p-4 ring-1 ring-line" role="search">
         <label className="flex flex-[1_1_220px] flex-col gap-1 text-sm font-semibold">

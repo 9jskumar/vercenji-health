@@ -57,6 +57,15 @@ An order is marked paid only by a verified signature from Razorpay: either the s
 
 Delivery charges are set with `SHIPPING_FLAT_RUPEES` and `SHIPPING_FREE_ABOVE_RUPEES`. The owner has confirmed free delivery from ₹3,000; the charge for smaller orders is still to be confirmed, and until `SHIPPING_FLAT_RUPEES` is set no charge is added.
 
+## UAE store (Stripe)
+The site has two stores, switched at the top of every page: **India** (prices in ₹ INR including GST, paid through Razorpay) and **UAE** (prices in AED including 5% VAT, paid through Stripe's hosted Checkout, sold by the UAE company under the Vercenji brand).
+
+- A product option belongs to one store by its currency. Add an INR option and an AED option (own SKU and stock) to sell a product in both. A product appears in a store only when it has an option on sale in that currency.
+- The UAE switch appears once `STRIPE_SECRET_KEY` is set. With `sk_test_` keys it is shown only to staff signed in to `/admin`, and test orders get a do-not-ship note.
+- Stripe webhook: `https://<site>/api/webhooks/stripe`, events `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` and `checkout.session.expired`. Set `STRIPE_WEBHOOK_SECRET` to the signing secret (`whsec_…`). Signatures older than five minutes are rejected, and each event is processed once.
+- After paying, Stripe returns the customer to `/checkout/stripe-return`, which reads the session back from Stripe before confirming. The webhook confirms independently.
+- UAE delivery: `SHIPPING_AE_FLAT_AED` and `SHIPPING_AE_FREE_ABOVE_AED`. UAE company details shown at checkout: `UAE_COMPANY_NAME`, `UAE_TRADE_LICENCE`, `UAE_TRN`, `UAE_COMPANY_ADDRESS`, `UAE_DELIVERY_DAYS`.
+
 Orders are managed at `/admin/orders` (owner, or staff with the `orders` role). Staff move orders through processing, shipped (courier and tracking number required) and delivered. Cancelling a paid order returns its stock and reminds staff to issue the refund in the Razorpay dashboard; refunds from the admin come later.
 
 ## Careers and recruitment

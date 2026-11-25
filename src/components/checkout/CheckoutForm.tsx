@@ -6,7 +6,7 @@ import { useActionState, useState } from "react";
 import { keepValuesSubmit } from "@/lib/forms";
 import { formatMoney } from "@/lib/money";
 import { confirmPayment, placeOrder, type CheckoutState } from "@/lib/actions/checkout";
-import { indianStates } from "@/content/checkout";
+import { indianStates, uaeEmirates } from "@/content/checkout";
 
 type Pay = NonNullable<CheckoutState["pay"]>;
 type SuccessResponse = { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string };
@@ -36,7 +36,8 @@ function loadCheckout(): Promise<void> {
 
 type Phase = "form" | "paying" | "dismissed" | "confirming" | "failed";
 
-export function CheckoutForm({ enabled }: { enabled: boolean }) {
+export function CheckoutForm({ enabled, market = "IN" }: { enabled: boolean; market?: "IN" | "AE" }) {
+  const uae = market === "AE";
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("form");
   const [message, setMessage] = useState<string | null>(null);
@@ -82,6 +83,8 @@ export function CheckoutForm({ enabled }: { enabled: boolean }) {
   const [state, action, pending] = useActionState<CheckoutState, FormData>(async (prev, fd) => {
     const res = await placeOrder(prev, fd);
     if (res.pay) openPayment(res.pay);
+    // UAE orders are paid on Stripe's own secure page, which returns here afterwards.
+    if (res.redirectUrl) window.location.assign(res.redirectUrl);
     return res;
   }, {});
 
@@ -120,27 +123,31 @@ export function CheckoutForm({ enabled }: { enabled: boolean }) {
       <fieldset className="m-0 grid grid-cols-1 gap-4 rounded-3xl border-0 bg-white p-6 ring-1 ring-line sm:grid-cols-2">
         <legend className="float-left mb-2 w-full font-serif text-2xl text-forest sm:col-span-2">Contact</legend>
         {field("email", "Email", { type: "email", required: true, autoComplete: "email", maxLength: 254 })}
-        {field("phone", "Mobile number", { type: "tel", required: true, autoComplete: "tel-national", inputMode: "tel", placeholder: "98765 43210", maxLength: 16 })}
+        {field("phone", "Mobile number", { type: "tel", required: true, autoComplete: "tel-national", inputMode: "tel", placeholder: uae ? "050 123 4567" : "98765 43210", maxLength: 16 })}
       </fieldset>
 
       <fieldset className="m-0 grid grid-cols-1 gap-4 rounded-3xl border-0 bg-white p-6 ring-1 ring-line sm:grid-cols-2">
         <legend className="float-left mb-2 w-full font-serif text-2xl text-forest sm:col-span-2">Delivery address</legend>
-        <p className="m-0 text-sm text-stone sm:col-span-2">We currently deliver within India.</p>
+        <p className="m-0 text-sm text-stone sm:col-span-2">{uae ? "UAE store: we deliver within the United Arab Emirates." : "We currently deliver within India."}</p>
         {field("fullName", "Recipient's name", { required: true, autoComplete: "name", maxLength: 120 }, true)}
         {field("line1", "House number and street", { required: true, autoComplete: "address-line1", maxLength: 160 }, true)}
         {field("line2", "Area or locality", { autoComplete: "address-line2", maxLength: 160 }, true)}
         {field("landmark", "Landmark", { maxLength: 120 })}
         {field("city", "City", { required: true, autoComplete: "address-level2", maxLength: 80 })}
         <label className="flex flex-col gap-1.5">
-          <span className="label">State</span>
+          <span className="label">{uae ? "Emirate" : "State"}</span>
           <select name="state" required defaultValue="" className="field" autoComplete="address-level1" aria-invalid={!!err("state")}>
-            <option value="" disabled>Choose a state</option>
-            {indianStates.map((s) => <option key={s} value={s}>{s}</option>)}
+            <option value="" disabled>{uae ? "Choose an emirate" : "Choose a state"}</option>
+            {(uae ? uaeEmirates : indianStates).map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
           {err("state") && <span className="text-sm font-semibold text-[#9B2C2C]">{err("state")}</span>}
         </label>
-        {field("postalCode", "PIN code", { required: true, autoComplete: "postal-code", inputMode: "numeric", pattern: "[1-9][0-9]{5}", maxLength: 6 })}
-        {field("gstin", "GSTIN for a business invoice", { maxLength: 15, autoCapitalize: "characters" })}
+        {uae
+          ? field("postalCode", "P.O. Box", { autoComplete: "postal-code", maxLength: 10 })
+          : field("postalCode", "PIN code", { required: true, autoComplete: "postal-code", inputMode: "numeric", pattern: "[1-9][0-9]{5}", maxLength: 6 })}
+        {uae
+          ? field("gstin", "TRN for a business invoice", { maxLength: 15, inputMode: "numeric" })
+          : field("gstin", "GSTIN for a business invoice", { maxLength: 15, autoCapitalize: "characters" })}
         <label className="flex flex-col gap-1.5 sm:col-span-2">
           <span className="label">Delivery notes <span className="font-normal text-stone">(optional)</span></span>
           <textarea name="notes" rows={2} maxLength={500} className="field" />
@@ -166,7 +173,9 @@ export function CheckoutForm({ enabled }: { enabled: boolean }) {
       <button type="submit" disabled={!enabled || pending} className="btn-primary self-start disabled:opacity-60">
         {pending ? "Preparing payment…" : "Continue to payment"}
       </button>
-      <p className="m-0 text-sm text-stone">Payment is handled securely by Razorpay. Vercenji never sees or stores your card details.</p>
+      <p className="m-0 text-sm text-stone">
+        Payment is handled securely by {uae ? "Stripe (cards, Apple Pay and Google Pay)" : "Razorpay"}. Vercenji never sees or stores your card details.
+      </p>
     </form>
   );
 }

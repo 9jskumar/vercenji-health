@@ -5,7 +5,7 @@ import { saveVariant, type FormState } from "@/lib/actions/catalogue";
 import { keepValuesSubmit } from "@/lib/forms";
 import { Notice } from "./FormBits";
 
-type V = { id: string; sku: string; name: string; mrpMinor: number; priceMinor: number; stock: number; lowStockAt: number; weightGrams: number | null; allowPreorder: boolean; isActive: boolean };
+type V = { id: string; currency: string; sku: string; name: string; mrpMinor: number; priceMinor: number; stock: number; lowStockAt: number; weightGrams: number | null; allowPreorder: boolean; isActive: boolean };
 
 const rs = (minor: number) => (minor / 100).toFixed(2).replace(/\.00$/, "");
 
@@ -29,16 +29,24 @@ export function VariantForm({ productId, variant }: { productId: string; variant
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
   const cell = "flex flex-col gap-1 text-xs font-semibold";
+  const [currency, setCurrency] = useState(variant?.currency ?? "INR");
+  const sym = currency === "AED" ? "AED" : "₹";
   return (
     <form ref={formRef} onSubmit={keepValuesSubmit(action)} onInput={() => setDirty(true)} data-unsaved-option={dirty ? "" : undefined}
       className={`flex flex-col gap-2 rounded-xl bg-ivory p-4 ${dirty ? "ring-2 ring-[#C9A24A]" : ""}`}>
       <input type="hidden" name="productId" value={productId} />
       {variant && <input type="hidden" name="variantId" value={variant.id} />}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-8">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-9">
+        <label className={cell}>Store
+          <select name="currency" value={currency} onChange={(e) => setCurrency(e.target.value)} className="field py-2 text-sm font-normal">
+            <option value="INR">₹ INR</option>
+            <option value="AED">AED</option>
+          </select>
+        </label>
         <label className={`${cell} col-span-2`}>Option name<input name="name" required maxLength={120} defaultValue={variant?.name} placeholder="60 capsules" className="field py-2 text-sm font-normal" /></label>
         <label className={cell}>SKU<input name="sku" required maxLength={60} defaultValue={variant?.sku} className="field py-2 text-sm font-normal uppercase" /></label>
-        <label className={cell}>MRP (₹)<input name="mrp" required inputMode="decimal" defaultValue={variant ? rs(variant.mrpMinor) : ""} className="field py-2 text-sm font-normal" /></label>
-        <label className={cell}>Price (₹)<input name="price" required inputMode="decimal" defaultValue={variant ? rs(variant.priceMinor) : ""} className="field py-2 text-sm font-normal" /></label>
+        <label className={cell}>MRP ({sym})<input name="mrp" required inputMode="decimal" defaultValue={variant ? rs(variant.mrpMinor) : ""} className="field py-2 text-sm font-normal" /></label>
+        <label className={cell}>Price ({sym})<input name="price" required inputMode="decimal" defaultValue={variant ? rs(variant.priceMinor) : ""} className="field py-2 text-sm font-normal" /></label>
         <label className={cell}>Stock<input name="stock" required type="number" min={0} defaultValue={variant?.stock ?? 0} className="field py-2 text-sm font-normal" /></label>
         <label className={cell}>Low-stock alert<input name="lowStockAt" type="number" min={0} defaultValue={variant?.lowStockAt ?? 5} className="field py-2 text-sm font-normal" /></label>
         <label className={cell}>Weight (g)<input name="weightGrams" inputMode="numeric" defaultValue={variant?.weightGrams ?? ""} className="field py-2 text-sm font-normal" /></label>

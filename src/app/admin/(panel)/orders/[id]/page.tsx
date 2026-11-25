@@ -6,7 +6,7 @@ import { PERMISSIONS } from "@/lib/auth/permissions";
 import { dateTime } from "@/content/admin";
 import { orderStatusLabels, orderStatusTone } from "@/content/checkout";
 import { nextStatuses } from "@/content/order-flow";
-import { formatMoney } from "@/lib/money";
+import { formatMoney, taxNameFor } from "@/lib/money";
 import { OrderStatusForm } from "@/components/admin/OrderStatusForm";
 
 type Address = { fullName: string; phone: string; line1: string; line2: string | null; landmark: string | null; city: string; state: string; postalCode: string };
@@ -59,7 +59,7 @@ export default async function OrderPage({ params }: PageProps<"/admin/orders/[id
               <dt>Subtotal</dt><dd className="m-0 text-right">{m(order.subtotalMinor)}</dd>
               <dt>Delivery</dt><dd className="m-0 text-right">{m(order.shippingMinor)}</dd>
               <dt className="font-bold">Total</dt><dd className="m-0 text-right font-bold">{m(order.totalMinor)}</dd>
-              <dt className="text-stone">GST included</dt><dd className="m-0 text-right text-stone">{m(order.taxMinor)}</dd>
+              <dt className="text-stone">{taxNameFor(order.currency)} included</dt><dd className="m-0 text-right text-stone">{m(order.taxMinor)}</dd>
             </dl>
           </section>
 
@@ -96,7 +96,7 @@ export default async function OrderPage({ params }: PageProps<"/admin/orders/[id
             <h2 className="m-0 mb-3 text-lg font-bold">Customer</h2>
             <span>{order.guestEmail}</span>
             <span>{order.guestPhone}</span>
-            {order.gstinForInvoice && <span>GSTIN {order.gstinForInvoice}</span>}
+            {order.gstinForInvoice && <span>{order.currency === "AED" ? "TRN" : "GSTIN"} {order.gstinForInvoice}</span>}
             <h3 className="m-0 mt-4 mb-1 text-sm font-bold">Deliver to</h3>
             <span>{a.fullName} · {a.phone}</span>
             <span>{a.line1}</span>

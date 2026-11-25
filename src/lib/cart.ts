@@ -48,13 +48,16 @@ export async function cartCount(): Promise<number> {
   return r._sum.quantity ?? 0;
 }
 
-/** Lines that can still be bought, with the reason when one cannot. */
-export function cartLines(cart: NonNullable<Awaited<ReturnType<typeof getCart>>>) {
+/**
+ * Lines that can still be bought, with the reason when one cannot. `currency` is the visitor's store
+ * (INR for India, AED for the UAE): an item priced for the other store cannot be bought from this one.
+ */
+export function cartLines(cart: NonNullable<Awaited<ReturnType<typeof getCart>>>, currency: string) {
   return cart.items.map((i) => {
     const v = i.variant;
     const sellable = v.isActive && v.product.status === "ACTIVE";
     const available = v.allowPreorder ? MAX_QTY : Math.min(MAX_QTY, v.stock);
-    const problem = !sellable ? "No longer available" : available <= 0 ? "Out of stock" : i.quantity > available ? `Only ${available} available` : null;
+    const problem = !sellable ? "No longer available" : v.currency !== currency ? `Priced for the ${v.currency === "AED" ? "UAE" : "India"} store. Remove it or switch store` : available <= 0 ? "Out of stock" : i.quantity > available ? `Only ${available} available` : null;
     return { item: i, variant: v, product: v.product, lineMinor: v.priceMinor * i.quantity, problem };
   });
 }

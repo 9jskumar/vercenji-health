@@ -9,7 +9,10 @@ import { ORDER_COOKIE, newOrderNumber, priceLines, recordCapturedPayment, record
 import { checkoutAvailable, createRazorpayOrder, fetchPayment, isTestMode, publicKeyId, verifyPaymentSignature } from "@/lib/razorpay";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
-import { indianStates } from "@/content/checkout";
+import { indianStates, uaeEmirates } from "@/content/checkout";
+import { getMarket } from "@/lib/market";
+import { siteUrl } from "@/lib/careers";
+import { createCheckoutSession, stripeTestMode } from "@/lib/stripe";
 import { getCustomer } from "@/lib/auth/customer";
 
 export type CheckoutState = {
@@ -23,20 +26,27 @@ export type CheckoutState = {
     orderNumber: string;
     prefill: { name: string; email: string; contact: string };
   };
+  /** UAE orders: Stripe's hosted payment page to send the customer to. */
+  redirectUrl?: string;
 };
 
-const schema = z.object({
+const common = {
   email: z.email("Please enter a valid email address.").max(254),
-  phone: z
-    .string()
-    .trim()
-    .transform((v) => v.replace(/[\s()-]/g, ""))
-    .pipe(z.string().regex(/^(\+91)?[6-9]\d{9}$/, "Please enter a 10-digit Indian mobile number.")),
   fullName: z.string().trim().min(2, "Please enter the recipient's name.").max(120),
   line1: z.string().trim().min(3, "Please enter the house number and street.").max(160),
   line2: z.string().trim().max(160).optional(),
   landmark: z.string().trim().max(120).optional(),
   city: z.string().trim().min(2, "Please enter the city.").max(80),
+  notes: z.string().trim().max(500).optional(),
+  consentTerms: z.literal("on", { error: "Please accept the terms of sale to continue." }),
+  marketing: z.literal("on").optional(),
+};
+const phone = (pattern: RegExp, message: string) =>
+  z.string().trim().transform((v) => v.replace(/[\s()-]/g, "")).pipe(z.string().regex(pattern, message));
+
+const indiaSchema = z.object({
+  ...common,
+  phone: phone(/^(\+91)?[6-9]\d{9}$/, "Please enter a 10-digit Indian mobile number."),
   state: z.string().refine((v) => (indianStates as readonly string[]).includes(v), "Please choose a state."),
   postalCode: z.string().trim().regex(/^[1-9]\d{5}$/, "Please enter a 6-digit PIN code."),
   gstin: z
@@ -45,19 +55,35 @@ const schema = z.object({
     .toUpperCase()
     .regex(/^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/, "Please enter a valid 15-character GSTIN, or leave it blank.")
     .optional(),
-  notes: z.string().trim().max(500).optional(),
-  consentTerms: z.literal("on", { error: "Please accept the terms of sale to continue." }),
-  marketing: z.literal("on").optional(),
 });
 
+const uaeSchema = z.object({
+  ...common,
+  phone: phone(/^(\+971|0)?5\d{8}$/, "Please enter a UAE mobile number, e.g. 050 123 4567."),
+  state: z.string().refine((v) => (uaeEmirates as readonly string[]).includes(v), "Please choose an emirate."),
+  postalCode: z.string().trim().max(10).optional(),
+  // UAE VAT registration number (TRN) for a business invoice: 15 digits.
+  gstin: z.string().trim().regex(/^\d{15}$/, "Please enter a valid 15-digit TRN, or leave it blank.").optional(),
+});
+
+function orderNote(uae: boolean) {
+  const test = uae ? stripeTestMode() : isTestMode();
+  if (test) return `TEST order placed with ${uae ? "Stripe" : "Razorpay"} test keys. No money was taken. Do not ship.`;
+  return uae ? "Order placed online (UAE store)." : "Order placed online.";
+}
+
+
 export async function placeOrder(_prev: CheckoutState, form: FormData): Promise<CheckoutState> {
-  if (!(await checkoutAvailable())) return { error: "Online payment is not switched on yet. Please try again later." };
+  const market = await getMarket();
+  const uae = market.code === "AE";
+  // getMarket() only returns the UAE store when Stripe is set up for this visitor.
+  if (!uae && !(await checkoutAvailable())) return { error: "Online payment is not switched on yet. Please try again later." };
   if (!rateLimit(`checkout:${await clientIp()}`, 10, 60 * 60 * 1000)) {
     return { error: "Too many checkout attempts from your connection. Please try again in an hour." };
   }
 
   const raw = Object.fromEntries([...form.entries()].filter(([k, v]) => !k.startsWith("$ACTION") && typeof v === "string" && v.trim() !== ""));
-  const parsed = schema.safeParse(raw);
+  const parsed = (uae ? uaeSchema : indiaSchema).safeParse(raw);
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
     for (const issue of parsed.error.issues) fieldErrors[String(issue.path[0] ?? "form")] ??= issue.message;
@@ -67,20 +93,19 @@ export async function placeOrder(_prev: CheckoutState, form: FormData): Promise<
 
   // Prices and stock always come from the database, never from the browser.
   const cart = await getCart();
-  const lines = cart ? cartLines(cart) : [];
+  const currency = market.currency;
+  const lines = cart ? cartLines(cart, currency) : [];
   if (lines.length === 0) return { error: "Your cart is empty." };
   const problem = lines.find((l) => l.problem);
   if (problem) return { error: `${problem.product.name} (${problem.variant.name}): ${problem.problem}. Please update your cart.` };
-  const currencies = new Set(lines.map((l) => l.variant.currency));
-  if (currencies.size !== 1) return { error: "Your cart mixes currencies. Please check out items separately." };
-  const currency = lines[0].variant.currency;
-  const totals = priceLines(lines);
-  if (totals.totalMinor < 100) return { error: "The order total is too small to pay online." };
+  const totals = priceLines(lines, currency);
+  // Smallest amounts the gateways accept: ₹1 (Razorpay), AED 2 (Stripe).
+  if (totals.totalMinor < (uae ? 200 : 100)) return { error: "The order total is too small to pay online." };
 
-  const phone = d.phone.startsWith("+91") ? d.phone : `+91${d.phone}`;
+  const phone = uae ? `+971${d.phone.replace(/^(\+971|0)/, "")}` : d.phone.startsWith("+91") ? d.phone : `+91${d.phone}`;
   const address = {
     fullName: d.fullName, phone, line1: d.line1, line2: d.line2 ?? null, landmark: d.landmark ?? null,
-    city: d.city, state: d.state, postalCode: d.postalCode, country: "IN",
+    city: d.city, state: d.state, postalCode: d.postalCode ?? "", country: market.code,
   };
 
   // Signed-in customers get the order on their account; guests see it after signing in with the same email.
@@ -113,7 +138,7 @@ export async function placeOrder(_prev: CheckoutState, form: FormData): Promise<
               hsnCode: l.product.hsnCode,
             })),
           },
-          events: { create: { status: "PENDING_PAYMENT", note: isTestMode() ? "TEST order placed with Razorpay test keys. No money was taken. Do not ship." : "Order placed online." } },
+          events: { create: { status: "PENDING_PAYMENT", note: orderNote(uae) } },
         },
         select: { id: true, number: true },
       });
@@ -126,8 +151,34 @@ export async function placeOrder(_prev: CheckoutState, form: FormData): Promise<
   if (!order) return { error: "Something went wrong on our side. Please try again in a few minutes." };
 
   try {
-    const rp = await createRazorpayOrder({ amountMinor: totals.totalMinor, currency, receipt: order.number, orderId: order.id });
-    await db.payment.create({ data: { orderId: order.id, providerOrderId: rp.id, amountMinor: totals.totalMinor, currency } });
+    let result: CheckoutState;
+    if (uae) {
+      const session = await createCheckoutSession({
+        orderId: order.id,
+        orderNumber: order.number,
+        currency,
+        lines: lines.map((l) => ({ name: `${l.product.name} (${l.variant.name})`, unitMinor: l.variant.priceMinor, quantity: l.item.quantity })),
+        shippingMinor: totals.shippingMinor,
+        email: d.email,
+        siteUrl: siteUrl(),
+      });
+      if (!session.url) throw new Error("Stripe returned no checkout URL");
+      await db.payment.create({ data: { orderId: order.id, provider: "stripe", providerOrderId: session.id, amountMinor: totals.totalMinor, currency } });
+      result = { redirectUrl: session.url };
+    } else {
+      const rp = await createRazorpayOrder({ amountMinor: totals.totalMinor, currency, receipt: order.number, orderId: order.id });
+      await db.payment.create({ data: { orderId: order.id, providerOrderId: rp.id, amountMinor: totals.totalMinor, currency } });
+      result = {
+        pay: {
+          keyId: publicKeyId(),
+          providerOrderId: rp.id,
+          amountMinor: totals.totalMinor,
+          currency,
+          orderNumber: order.number,
+          prefill: { name: d.fullName, email: d.email, contact: phone },
+        },
+      };
+    }
     if (d.marketing) {
       const email = d.email.toLowerCase();
       await db.newsletterSubscriber.upsert({
@@ -143,16 +194,7 @@ export async function placeOrder(_prev: CheckoutState, form: FormData): Promise<
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
     });
-    return {
-      pay: {
-        keyId: publicKeyId(),
-        providerOrderId: rp.id,
-        amountMinor: totals.totalMinor,
-        currency,
-        orderNumber: order.number,
-        prefill: { name: d.fullName, email: d.email, contact: phone },
-      },
-    };
+    return result;
   } catch (e) {
     console.error("payment setup failed", e);
     await db.order.update({
