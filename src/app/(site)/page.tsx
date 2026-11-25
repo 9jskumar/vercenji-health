@@ -109,9 +109,17 @@ export default function Home() {
       {isLive("ems") && (
       <section className="mt-12 bg-forest text-ivory">
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-12 px-6 py-[88px]">
-          <div className="flex min-h-[320px] flex-[1_1_420px] items-center justify-center rounded-[28px] border border-forest-line text-gold-light">
-            <VerticalIcon.ems size={140} />
-          </div>
+          <Link href="/vercenji-ems-wellness-training-suit" className="block flex-[1_1_420px] overflow-hidden rounded-[28px] ring-1 ring-forest-line">
+            <Image
+              src="/images/ems/banner-1376.webp"
+              alt="Vercenji EMS suit: a man wearing the suit in a modern gym, with the words The ultimate workout evolution, 20-minute full body stimulation"
+              width={1376}
+              height={768}
+              sizes="(min-width: 1024px) 600px, 100vw"
+              unoptimized
+              className="h-auto w-full"
+            />
+          </Link>
           <div className="flex flex-[1_1_460px] flex-col gap-5">
             <div className="text-[13px] font-bold tracking-[0.18em] text-gold-light uppercase">EMS Wellness</div>
             <h2 className="m-0 font-serif text-[clamp(32px,4vw,48px)] leading-[1.1] font-normal text-ivory">
