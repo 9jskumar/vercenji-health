@@ -2,15 +2,17 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { db } from "@/lib/db";
 import { formatMoney } from "@/lib/money";
+import { getMarket } from "@/lib/market";
 
 export async function FeaturedProducts() {
   await connection();
+  const { currency } = await getMarket();
   const products = await db.product.findMany({
-    where: { status: "ACTIVE", vertical: "NUTRITION" },
+    where: { status: "ACTIVE", vertical: "NUTRITION", variants: { some: { isActive: true, currency } } },
     orderBy: { updatedAt: "desc" },
     take: 4,
     include: {
-      variants: { where: { isActive: true }, orderBy: { priceMinor: "asc" }, take: 1 },
+      variants: { where: { isActive: true, currency }, orderBy: { priceMinor: "asc" }, take: 1 },
       categories: { include: { category: true }, take: 1 },
     },
   });

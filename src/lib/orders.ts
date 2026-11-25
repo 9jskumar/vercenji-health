@@ -9,13 +9,17 @@ export const ORDER_COOKIE = "vh_order";
 type Line = ReturnType<typeof cartLines>[number];
 
 /**
- * Delivery charge, set on the server by the owner (plan: rates to be confirmed before launch).
- * SHIPPING_FLAT_RUPEES: charge per order. SHIPPING_FREE_ABOVE_RUPEES: subtotal at or above which delivery is free.
- * Both default to 0, which means no delivery charge.
+ * Delivery charge, set on the server by the owner.
+ * India (INR): SHIPPING_FLAT_RUPEES is the charge per order, SHIPPING_FREE_ABOVE_RUPEES the subtotal from which delivery is free.
+ * UAE (AED): SHIPPING_AE_FLAT_AED and SHIPPING_AE_FREE_ABOVE_AED work the same way, in dirhams.
+ * All default to 0, which means no delivery charge.
  */
-export function deliveryChargeMinor(subtotalMinor: number) {
-  const flat = Math.round(Number(process.env.SHIPPING_FLAT_RUPEES || 0) * 100);
-  const freeAbove = Math.round(Number(process.env.SHIPPING_FREE_ABOVE_RUPEES || 0) * 100);
+export function deliveryChargeMinor(subtotalMinor: number, currency = "INR") {
+  const env = currency === "AED"
+    ? { flat: process.env.SHIPPING_AE_FLAT_AED, free: process.env.SHIPPING_AE_FREE_ABOVE_AED }
+    : { flat: process.env.SHIPPING_FLAT_RUPEES, free: process.env.SHIPPING_FREE_ABOVE_RUPEES };
+  const flat = Math.round(Number(env.flat || 0) * 100);
+  const freeAbove = Math.round(Number(env.free || 0) * 100);
   if (!Number.isFinite(flat) || flat <= 0) return 0;
   if (freeAbove > 0 && subtotalMinor >= freeAbove) return 0;
   return flat;
@@ -27,10 +31,14 @@ export function includedGst(amountMinor: number, rateBps: number | null) {
   return Math.round((amountMinor * rateBps) / (10_000 + rateBps));
 }
 
-export function priceLines(lines: Line[]) {
+/** UAE VAT (5%), included in AED prices. */
+const UAE_VAT_BPS = 500;
+
+export function priceLines(lines: Line[], currency = "INR") {
   const subtotalMinor = lines.reduce((s, l) => s + l.lineMinor, 0);
-  const shippingMinor = deliveryChargeMinor(subtotalMinor);
-  const taxMinor = lines.reduce((s, l) => s + includedGst(l.lineMinor, l.product.gstRateBps), 0);
+  const shippingMinor = deliveryChargeMinor(subtotalMinor, currency);
+  // India: GST at each product's rate. UAE: VAT at 5% on every item. Both are included in the price.
+  const taxMinor = lines.reduce((s, l) => s + includedGst(l.lineMinor, currency === "AED" ? UAE_VAT_BPS : l.product.gstRateBps), 0);
   return { subtotalMinor, shippingMinor, taxMinor, totalMinor: subtotalMinor + shippingMinor };
 }
 

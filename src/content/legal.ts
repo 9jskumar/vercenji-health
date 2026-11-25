@@ -42,7 +42,7 @@ export const legalPages: LegalPage[] = [
             "When you order: your name, email, mobile number, delivery address, optional GSTIN and delivery notes, and the items you buy.",
             "When you create an account or sign in: your email address, the name you choose to add, and a record of when you signed in. Sign-in codes are stored only in scrambled form and expire after 10 minutes.",
             "When you report a problem with a delivery: the reason and details you give.",
-            "When you pay: Razorpay processes your payment on its own secure page. We receive the payment status, amount and method (for example UPI or card), but never your card number, UPI PIN or bank login.",
+            "When you pay: Razorpay (India store) or Stripe (UAE store) processes your payment on its own secure page. We receive the payment status, amount and method (for example UPI or card), but never your card number, UPI PIN or bank login.",
             "When you apply to become a partner: the details you enter in the application and any documents you upload.",
             "When you apply for a job or submit your profile for future opportunities: your name, contact details, location, work experience, employment status, qualifications, current or previous employer, LinkedIn profile, expected salary, notice period, cover letter and CV, together with the time you gave consent. Our recruitment team adds notes and status updates while reviewing your application.",
             "When you join our mailing list: your email address and the time you agreed.",
@@ -74,7 +74,7 @@ export const legalPages: LegalPage[] = [
         heading: "Who we share it with",
         body: [
           [
-            "Razorpay, to take payments.",
+            "Razorpay (India store) and Stripe (UAE store), to take payments.",
             "Courier partners, who receive your name, phone number and delivery address to deliver your order.",
             "Our hosting provider, which stores the website and its database.",
             "Government authorities, where the law requires it.",
@@ -126,7 +126,7 @@ export const legalPages: LegalPage[] = [
       {
         heading: "Prices and payment",
         body: [
-          "Prices are shown in Indian rupees and include GST. Any delivery charge is shown before you pay. Payment is taken through Razorpay. Your order is confirmed only once Razorpay confirms the payment.",
+          "In the India store, prices are shown in Indian rupees, include GST and are paid through Razorpay. In the UAE store, prices are shown in UAE dirhams, include 5% VAT and are paid through Stripe. Any delivery charge is shown before you pay. Your order is confirmed only once the payment provider confirms the payment.",
         ],
       },
       {

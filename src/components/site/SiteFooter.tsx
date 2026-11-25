@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
+import { MarketSwitch } from "./MarketSwitch";
 import { company, isLive, productDisclaimer, type Section } from "@/lib/site";
 
 // The third value, when present, is the section the link belongs to; hidden sections are left out.
@@ -79,10 +81,9 @@ export function SiteFooter() {
             © {year} {company.legalName} · {company.brand}™ · GSTIN {company.gstin}
             {company.registeredAddress ? ` · ${company.registeredAddress}` : ""}
           </span>
-          <span className="flex flex-wrap gap-4">
-            <span>India · ₹ INR</span>
-            <span>UAE · AED (coming soon)</span>
-          </span>
+          <Suspense fallback={<span>India · ₹ INR</span>}>
+            <MarketSwitch />
+          </Suspense>
         </div>
       </div>
     </footer>

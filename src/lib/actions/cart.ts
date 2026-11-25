@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { getCart, getOrCreateCart, MAX_QTY } from "@/lib/cart";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
+import { getMarket } from "@/lib/market";
 
 export type CartState = { ok?: boolean; error?: string };
 
@@ -19,6 +20,8 @@ export async function addToCart(_prev: CartState, form: FormData): Promise<CartS
 
   const variant = await db.productVariant.findUnique({ where: { id: variantId }, include: { product: { select: { status: true } } } });
   if (!variant || !variant.isActive || variant.product.status !== "ACTIVE") return { error: "This item is not available." };
+  const market = await getMarket();
+  if (variant.currency !== market.currency) return { error: `This item is not sold in the ${market.label} store.` };
 
   const cart = await getOrCreateCart();
   const existing = await db.cartItem.findUnique({ where: { cartId_variantId: { cartId: cart.id, variantId } } });

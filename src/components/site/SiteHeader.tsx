@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CartCount } from "./CartCount";
+import { MarketSwitch } from "./MarketSwitch";
 import { MainNav, NavList } from "./MainNav";
 import { isLive } from "@/lib/site";
 
@@ -12,7 +13,9 @@ export function SiteHeader() {
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-2">
           <span>Integrated health &amp; wellness · Nourish. Move. Hydrate. Live.</span>
           <span className="flex flex-wrap gap-[18px]">
-            <span>India · ₹ INR</span>
+            <Suspense fallback={<span>India · ₹ INR</span>}>
+              <MarketSwitch />
+            </Suspense>
             <Link href="/account/orders" className="text-ivory no-underline">
               Track order
             </Link>

@@ -5,7 +5,8 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { db } from "@/lib/db";
 import { ORDER_COOKIE } from "@/lib/orders";
-import { formatMoney } from "@/lib/money";
+import { formatMoney, taxNameFor } from "@/lib/money";
+import { UaeSeller } from "@/components/checkout/UaeSeller";
 
 export const metadata: Metadata = { title: "Order confirmation", robots: { index: false } };
 
@@ -50,6 +51,8 @@ async function Confirmation() {
       <div className="flex flex-col gap-1 border-t border-line pt-4">
         <div className="flex justify-between"><span>Delivery</span><span>{order.shippingMinor ? formatMoney(order.shippingMinor, order.currency) : "No charge"}</span></div>
         <div className="flex justify-between text-lg font-bold"><span>Total</span><span>{formatMoney(order.totalMinor, order.currency)}</span></div>
+        {order.taxMinor > 0 && <span className="text-sm text-stone">Includes {taxNameFor(order.currency)} of {formatMoney(order.taxMinor, order.currency)}</span>}
+        {order.currency === "AED" && <UaeSeller />}
       </div>
       <div className="flex flex-col gap-1">
         <span className="label">Delivering to</span>

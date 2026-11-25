@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { getMarket } from "@/lib/market";
 import { cartLines, getCart, MAX_QTY } from "@/lib/cart";
 import { setCartQuantity } from "@/lib/actions/cart";
 import { mediaUrl } from "@/lib/catalogue";
@@ -15,7 +16,8 @@ const productHref = (vertical: string, slug: string) => `/${vertical === "LIFEST
 async function CartContents() {
   await connection();
   const cart = await getCart();
-  const lines = cart ? cartLines(cart) : [];
+  const market = await getMarket();
+  const lines = cart ? cartLines(cart, market.currency) : [];
   if (lines.length === 0) {
     return (
       <div className="flex flex-col items-start gap-4 rounded-3xl bg-white p-10 ring-1 ring-line">
@@ -26,7 +28,7 @@ async function CartContents() {
   }
   const sellable = lines.filter((l) => !l.problem);
   const subtotal = sellable.reduce((s, l) => s + l.lineMinor, 0);
-  const currency = lines[0].variant.currency;
+  const currency = market.currency;
 
   return (
     <div className="flex flex-wrap gap-8">
@@ -64,7 +66,7 @@ async function CartContents() {
       <aside className="flex flex-[1_1_280px] flex-col gap-4 self-start rounded-3xl bg-white p-6 ring-1 ring-line">
         <h2 className="m-0 font-serif text-2xl font-normal text-forest">Order summary</h2>
         <div className="flex justify-between"><span>Subtotal</span><strong>{formatMoney(subtotal, currency)}</strong></div>
-        <p className="m-0 text-sm text-stone">Prices include GST. Delivery is calculated at checkout.</p>
+        <p className="m-0 text-sm text-stone">Prices include {market.taxName}. Delivery is calculated at checkout.</p>
         <Link href="/checkout" aria-disabled={sellable.length === 0} className={`btn-primary ${sellable.length === 0 ? "pointer-events-none opacity-50" : ""}`}>Checkout</Link>
       </aside>
     </div>

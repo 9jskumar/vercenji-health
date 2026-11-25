@@ -29,7 +29,7 @@ export const faqs: { group: string; items: { q: string; a: string; link?: [label
     items: [
       {
         q: "How can I pay?",
-        a: "Payment is taken on Razorpay's secure payment page, so your card, UPI or bank details never reach our website. Your order is confirmed once Razorpay confirms the payment.",
+        a: "In the India store (₹ INR), payment is taken on Razorpay's secure payment page. In the UAE store (AED), it is taken on Stripe's secure payment page, which accepts cards, Apple Pay and Google Pay. Either way, your card, UPI or bank details never reach our website, and your order is confirmed once the payment provider confirms the payment. Use the India / UAE switch at the top of the page to choose your store.",
       },
       {
         q: "Do prices include GST?",

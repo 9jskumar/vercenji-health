@@ -29,6 +29,8 @@ export default async function EditProduct({ params, searchParams }: PageProps<"/
   const hidden: string[] = [];
   if (values.status !== "ACTIVE") hidden.push("Set Status to “Active (visible in the shop)” at the bottom of this page and click Save product.");
   if (!variants.some((v) => v.isActive)) hidden.push("Add at least one option below with “On sale” ticked, and click Add option. Typing it in is not enough.");
+  const inIndia = variants.some((v) => v.isActive && v.currency === "INR");
+  const inUae = variants.some((v) => v.isActive && v.currency === "AED");
   if (!path) hidden.push("This vertical does not have shop pages yet.");
   const live = hidden.length === 0 ? path : null;
 
@@ -49,7 +51,16 @@ export default async function EditProduct({ params, searchParams }: PageProps<"/
 
       <section className="flex flex-col gap-3 rounded-2xl bg-white p-6 ring-1 ring-line">
         <h2 className="m-0 text-base font-bold">Options, prices and stock</h2>
-        <p className="m-0 text-sm text-stone">Prices are in rupees and include GST. The product shows in the shop only when it is Active and has at least one option on sale.</p>
+        <p className="m-0 text-sm text-stone">
+          Each option is sold in one store. <strong>INR</strong> options appear in the India store (prices include GST, paid through Razorpay).{" "}
+          <strong>AED</strong> options appear in the UAE store (prices include 5% VAT, paid through Stripe) and have their own stock and SKU.
+          To sell a product in both, add one INR option and one AED option.
+        </p>
+        {variants.length > 0 && (
+          <p className="m-0 text-sm font-semibold text-forest">
+            India store: {inIndia ? "on sale" : "not on sale"} · UAE store: {inUae ? "on sale" : "not on sale"}
+          </p>
+        )}
         {variants.map((v) => <VariantForm key={v.id} productId={id} variant={v} />)}
         <h3 className="m-0 mt-2 text-sm font-bold">Add an option</h3>
         <VariantForm productId={id} />

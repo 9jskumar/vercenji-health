@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { db } from "@/lib/db";
 import { customerOrderWhere, requireCustomer } from "@/lib/auth/customer";
-import { formatMoney } from "@/lib/money";
+import { formatMoney, taxNameFor } from "@/lib/money";
 import { customerStatus, withinReturnWindow } from "@/content/account";
 import { AccountNav } from "@/components/account/AccountNav";
 import { StatusBadge } from "@/components/account/StatusBadge";
@@ -61,7 +61,7 @@ async function OrderDetail({ params }: { params: Promise<{ number: string }> }) 
           {order.discountMinor > 0 && <div className="flex justify-between"><span>Discount</span><span>−{formatMoney(order.discountMinor, order.currency)}</span></div>}
           <div className="flex justify-between"><span>Delivery</span><span>{order.shippingMinor ? formatMoney(order.shippingMinor, order.currency) : "No charge"}</span></div>
           <div className="flex justify-between text-lg font-bold"><span>Total</span><span>{formatMoney(order.totalMinor, order.currency)}</span></div>
-          {order.taxMinor > 0 && <span className="text-sm text-stone">Includes GST of {formatMoney(order.taxMinor, order.currency)}</span>}
+          {order.taxMinor > 0 && <span className="text-sm text-stone">Includes {taxNameFor(order.currency)} of {formatMoney(order.taxMinor, order.currency)}</span>}
         </div>
       </section>
 

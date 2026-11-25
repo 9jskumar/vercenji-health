@@ -152,7 +152,7 @@ export async function saveProduct(_prev: FormState, form: FormData): Promise<For
 }
 
 const rupees = (label: string) =>
-  z.string().trim().regex(/^\d{1,7}(\.\d{1,2})?$/, `Enter ${label} in rupees, e.g. 360 or 360.50.`).transform((v) => Math.round(Number(v) * 100));
+  z.string().trim().regex(/^\d{1,7}(\.\d{1,2})?$/, `Enter ${label} as a number, e.g. 360 or 360.50.`).transform((v) => Math.round(Number(v) * 100));
 
 const OPTION_NAME_MAX = 120;
 
@@ -160,6 +160,7 @@ const variantSchema = z
   .object({
     productId: z.string().min(1).max(64),
     variantId: z.string().max(64).optional(),
+    currency: z.enum(["INR", "AED"], { error: "Choose the store for this option." }).default("INR"),
     sku: z
       .string()
       .trim()
@@ -184,6 +185,7 @@ export async function saveVariant(_prev: FormState, form: FormData): Promise<For
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Please check the option." };
   const v = parsed.data;
   const data = {
+    currency: v.currency,
     sku: v.sku.toUpperCase(),
     name: v.name,
     mrpMinor: v.mrp,

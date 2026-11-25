@@ -2,18 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { getMarket } from "@/lib/market";
 import { cartLines, getCart } from "@/lib/cart";
 import { priceLines } from "@/lib/orders";
 import { checkoutAvailable, isTestMode } from "@/lib/razorpay";
+import { stripeTestMode } from "@/lib/stripe";
 import { formatMoney } from "@/lib/money";
+import { UaeSeller } from "@/components/checkout/UaeSeller";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
 
 export const metadata: Metadata = { title: "Checkout", robots: { index: false } };
 
-async function Checkout() {
+async function Checkout({ searchParams }: { searchParams: PageProps<"/checkout">["searchParams"] }) {
   await connection();
   const cart = await getCart();
-  const lines = cart ? cartLines(cart) : [];
+  const market = await getMarket();
+  const lines = cart ? cartLines(cart, market.currency) : [];
   if (lines.length === 0) {
     return (
       <div className="flex flex-col items-start gap-4 rounded-3xl bg-white p-10 ring-1 ring-line">
@@ -31,9 +35,13 @@ async function Checkout() {
       </div>
     );
   }
-  const totals = priceLines(lines);
-  const currency = lines[0].variant.currency;
-  const enabled = await checkoutAvailable();
+  const currency = market.currency;
+  const totals = priceLines(lines, currency);
+  // The UAE store is only reachable once Stripe is set up (and, in test mode, only by staff).
+  const uae = market.code === "AE";
+  const enabled = uae ? true : await checkoutAvailable();
+  const testMode = uae ? stripeTestMode() : isTestMode();
+  const cancelled = (await searchParams).payment === "cancelled";
 
   return (
     <div className="flex flex-wrap gap-8">
@@ -43,12 +51,17 @@ async function Checkout() {
             Online payment is not switched on yet, so orders cannot be placed. Please check back soon.
           </p>
         )}
-        {enabled && isTestMode() && (
+        {enabled && testMode && (
           <p role="status" className="m-0 rounded-2xl bg-[#FBF1DC] p-4 text-[15px] text-[#7A5A1E]">
-            Test mode (visible to signed-in staff only): payments use Razorpay test cards and no money is taken.
+            Test mode (visible to signed-in staff only): payments use {uae ? "Stripe" : "Razorpay"} test cards and no money is taken.
           </p>
         )}
-        <CheckoutForm enabled={enabled} />
+        {cancelled && (
+          <p role="alert" className="m-0 rounded-2xl bg-[#FBEAEA] p-4 text-[15px] text-[#9B2C2C]">
+            The payment was cancelled and nothing was charged. You can try again below.
+          </p>
+        )}
+        <CheckoutForm enabled={enabled} market={market.code} />
       </div>
       <aside className="flex flex-[1_1_300px] flex-col gap-4 self-start rounded-3xl bg-white p-6 ring-1 ring-line">
         <h2 className="m-0 font-serif text-2xl font-normal text-forest">Order summary</h2>
@@ -66,7 +79,8 @@ async function Checkout() {
           <div className="flex justify-between"><span>Subtotal</span><span>{formatMoney(totals.subtotalMinor, currency)}</span></div>
           <div className="flex justify-between"><span>Delivery</span><span>{totals.shippingMinor ? formatMoney(totals.shippingMinor, currency) : "No charge"}</span></div>
           <div className="flex justify-between text-lg font-bold"><span>Total</span><span>{formatMoney(totals.totalMinor, currency)}</span></div>
-          {totals.taxMinor > 0 && <p className="m-0 text-sm text-stone">Includes GST of {formatMoney(totals.taxMinor, currency)}.</p>}
+          {totals.taxMinor > 0 && <p className="m-0 text-sm text-stone">Includes {market.taxName} of {formatMoney(totals.taxMinor, currency)}.</p>}
+          {uae && <UaeSeller />}
         </div>
         <Link href="/cart" className="text-sm font-semibold text-green underline">Edit cart</Link>
       </aside>
@@ -74,12 +88,12 @@ async function Checkout() {
   );
 }
 
-export default function CheckoutPage() {
+export default function CheckoutPage({ searchParams }: PageProps<"/checkout">) {
   return (
     <div className="mx-auto flex max-w-[1240px] flex-col gap-6 px-6 pt-10 pb-[88px]">
       <h1 className="m-0 font-serif text-5xl font-normal text-forest">Checkout</h1>
       <Suspense fallback={<p className="text-stone">Loading checkout…</p>}>
-        <Checkout />
+        <Checkout searchParams={searchParams} />
       </Suspense>
     </div>
   );

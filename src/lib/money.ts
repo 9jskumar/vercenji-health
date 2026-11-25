@@ -1,3 +1,6 @@
+/** India orders carry GST, UAE (AED) orders carry VAT. */
+export const taxNameFor = (currency: string) => (currency === "AED" ? "VAT" : "GST");
+
 const formatters = new Map<string, Intl.NumberFormat>();
 
 /** Formats integer minor units (paise, fils) for display, e.g. 36000 INR -> "₹360". */

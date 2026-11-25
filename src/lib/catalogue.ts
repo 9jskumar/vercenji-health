@@ -11,29 +11,33 @@ export const SORTS = {
 } as const;
 export type SortKey = keyof typeof SORTS;
 
-export type ListParams = { vertical: Vertical; category?: string; q?: string; sort?: SortKey; audience?: string };
+export type ListParams = { vertical: Vertical; currency: string; category?: string; q?: string; sort?: SortKey; audience?: string };
 
-const cardInclude = {
-  variants: { where: { isActive: true }, orderBy: { priceMinor: "asc" } },
-  images: { orderBy: { sortOrder: "asc" }, take: 1 },
-  categories: { include: { category: true } },
-} satisfies Prisma.ProductInclude;
+const cardInclude = (currency: string) =>
+  ({
+    variants: { where: { isActive: true, currency }, orderBy: { priceMinor: "asc" } },
+    images: { orderBy: { sortOrder: "asc" }, take: 1 },
+    categories: { include: { category: true } },
+  }) satisfies Prisma.ProductInclude;
 
-export type ProductCardData = Prisma.ProductGetPayload<{ include: typeof cardInclude }>;
+export type ProductCardData = Prisma.ProductGetPayload<{ include: ReturnType<typeof cardInclude> }>;
 
-/** Only ACTIVE products with at least one active variant are ever shown to customers. */
-export async function listProducts({ vertical, category, q, sort = "popular", audience }: ListParams) {
+/**
+ * Only ACTIVE products with at least one active variant in the visitor's store currency (INR for
+ * India, AED for the UAE) are ever shown to customers.
+ */
+export async function listProducts({ vertical, currency, category, q, sort = "popular", audience }: ListParams) {
   const where: Prisma.ProductWhereInput = {
     vertical,
     status: "ACTIVE",
-    variants: { some: { isActive: true } },
+    variants: { some: { isActive: true, currency } },
     ...(category && { categories: { some: { category: { slug: category } } } }),
     ...(q && { OR: [{ name: { contains: q } }, { subtitle: { contains: q } }, { brand: { contains: q } }] }),
     ...(audience && { audience: { array_contains: [audience] } }),
   };
   const products = await db.product.findMany({
     where,
-    include: cardInclude,
+    include: cardInclude(currency),
     orderBy: sort === "name" ? { name: "asc" } : { updatedAt: "desc" },
     take: 120,
   });
@@ -43,22 +47,22 @@ export async function listProducts({ vertical, category, q, sort = "popular", au
   return products;
 }
 
-export async function listCategories(vertical: Vertical) {
+export async function listCategories(vertical: Vertical, currency: string) {
   const cats = await db.category.findMany({
     where: { vertical, parentId: null },
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     include: {
-      _count: { select: { products: { where: { product: { status: "ACTIVE", variants: { some: { isActive: true } } } } } } },
+      _count: { select: { products: { where: { product: { status: "ACTIVE", variants: { some: { isActive: true, currency } } } } } } },
     },
   });
   return cats.filter((c) => c._count.products > 0);
 }
 
-export async function getProduct(vertical: Vertical, slug: string) {
+export async function getProduct(vertical: Vertical, slug: string, currency: string) {
   return db.product.findFirst({
     where: { vertical, slug, status: "ACTIVE" },
     include: {
-      variants: { where: { isActive: true }, orderBy: { priceMinor: "asc" } },
+      variants: { where: { isActive: true, currency }, orderBy: { priceMinor: "asc" } },
       images: { orderBy: { sortOrder: "asc" } },
       categories: { include: { category: true } },
       reviews: { where: { status: "PUBLISHED" }, select: { rating: true } },
